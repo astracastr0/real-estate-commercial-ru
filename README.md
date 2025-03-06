@@ -78,7 +78,7 @@ python3 scripts/script_master_all.py
 ```
 Sending the Final Report via Email
 ```
-python3 scripts/send_email.py
+python3 scripts/send_email.py --to_email fedora@gmail.com
 ```
 
 ### 📅 Automate on Oracle Cloud Free Tier
@@ -101,5 +101,5 @@ cat /home/ubuntu/email.log
 ```
 📧 Email Report Automation
 
-The send_email.py script emails the final processed file to fedora@gmail.com daily.
+The send_email.py script emails the final processed file daily.
 Uses SendGrid API (Free for 100 emails/day).
