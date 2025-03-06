@@ -2,9 +2,6 @@ import argparse
 import datetime
 import os
 
-# Add the parent directory to sys.path to allow imports
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 from scripts.script1_get_sale_rent_offers import main as fetch_offers
 from scripts.script2_rent_readjs import process_rent_jsons as process_rent
 from scripts.script2_sale_readjs import process_sale_jsons as process_sale
