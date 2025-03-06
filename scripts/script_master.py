@@ -2,7 +2,13 @@ import argparse
 import datetime
 import os
 
-from scripts import fetch_offers, process_rent, process_sale
+# Ensure the scripts folder is included in Python's module search path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "scripts")))
+
+from script1_get_sale_rent_offers import main as fetch_offers
+from script2_rent_readjs import process_rent_jsons as process_rent
+from script2_sale_readjs import process_sale_jsons as process_sale
+# from scripts import fetch_offers, process_rent, process_sale
 # from scripts.script1_get_sale_rent_offers import main as fetch_offers
 # from scripts.script2_rent_readjs import process_rent_jsons as process_rent
 # from scripts.script2_sale_readjs import process_sale_jsons as process_sale
