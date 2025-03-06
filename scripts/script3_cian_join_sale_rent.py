@@ -25,6 +25,8 @@ def join_sale_rent(sale_csv_path, rent_csv_path, output_csv_path):
         (sales_df['description'].str.lower().str.contains("готовый бизнес") == False) &  # Exclude descriptions containing "готовый бизнес"
         (sales_df['description'].str.lower().str.contains("готовым арендным бизнесом") == False) & # Exclude descriptions containing "готовый бизнес"
         (sales_df['description'].str.lower().str.contains("готовым бизнесом") == False)  # Exclude descriptions containing "готовый бизнес"
+        (sales_df['description'].str.lower().str.contains("арендатор") == False)  # Exclude descriptions containing "готовый бизнес"
+  
   
         
     ]
