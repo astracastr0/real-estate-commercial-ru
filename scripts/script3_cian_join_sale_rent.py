@@ -31,7 +31,7 @@ def join_sale_rent(sale_csv_path, rent_csv_path, output_csv_path):
         
     ]
 
-    # Define a function to check if a rent offer is within 3 km of a sale offer
+    # Define a function to check if a rent offer is within 10 km of a sale offer
     def is_within_10km(sale, rent):
         coords_sale = (sale["geo_lat"], sale["geo_lng"])
         coords_rent = (rent["geo_lat"], rent["geo_lng"])
