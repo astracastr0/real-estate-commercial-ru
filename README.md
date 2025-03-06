@@ -1,10 +1,8 @@
 # 📌 Real Estate Data Processing Scripts
 
-## Overview
-
 This project automates the process of fetching, processing, and analyzing real estate sale and rent listings from **Cian**. It also enriches the data with nearby store information using the **Google Places API** and sends the final report via email.
 
-## 🚀 Features
+## Features
 
 - **Fetch real estate listings** (sale & rent) from Cian
 - **Process & clean data** into structured CSVs
