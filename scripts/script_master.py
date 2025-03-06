@@ -9,11 +9,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "s
 from script1_get_sale_rent_offers import main as fetch_offers
 from script2_rent_readjs import process_rent_jsons as process_rent
 from script2_sale_readjs import process_sale_jsons as process_sale
-from scripts.script3_cian_join_sale_rent import join_sale_rent
-from scripts.script4_google_nearby_cat import enrich_dataset  # Ensure this import works correctly
-
-
-
+from script3_cian_join_sale_rent import join_sale_rent
+from script4_google_nearby_cat import enrich_dataset
 
 def main(area, api_key):
     # Get the current date in YYMMDD format
