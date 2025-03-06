@@ -16,7 +16,7 @@ This project automates the process of fetching, processing, and analyzing real e
 ---
 
 ## 📁 Project Structure
-
+```
 real-estate-scripts/
 ├── README.md            # Project documentation
 ├── requirements.txt     # Required Python packages
@@ -36,7 +36,7 @@ real-estate-scripts/
 │   ├── sample_json/
 │   ├── output_csv/
 └── LICENSE
-
+```
 
 ---
 
@@ -47,27 +47,38 @@ real-estate-scripts/
 ```bash
 git clone https://github.com/yourusername/real-estate-scripts.git
 cd real-estate-scripts
+```
 
 ### 2️⃣ Install Dependencies
+```
 pip3 install -r requirements.txt
-
+```
 ### 3️⃣ Set Up API Keys
 
 Google Places API Key: Required for store enrichment.
-
 SendGrid API Key: Required for email automation.
 
 Store them as environment variables:
-
+```
 export GOOGLE_API_KEY="your-google-api-key"
 export SENDGRID_API_KEY="your-sendgrid-api-key"
-
+```
 Or add them to a .env file:
-
+```
 GOOGLE_API_KEY=your-google-api-key
 SENDGRID_API_KEY=your-sendgrid-api-key
-
-###🔥 Usage
+```
+### 🔥 Usage
 
 Running a Single Area
-
+```
+python3 scripts/script_master.py NAO --api_key $GOOGLE_API_KEY
+```
+Running All Areas (Fully Automated Pipeline)
+```
+python3 scripts/script_master_all.py
+```
+Sending the Final Report via Email
+```
+python3 scripts/send_email.py
+```
