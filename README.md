@@ -82,3 +82,26 @@ Sending the Final Report via Email
 ```
 python3 scripts/send_email.py
 ```
+
+### 📅 Automate on Oracle Cloud Free Tier
+
+## 1️⃣ Schedule Daily Execution
+
+```crontab -e```
+
+Add these lines to run the scripts daily at 3 AM:
+
+```0 3 * * * /usr/bin/python3 /home/ubuntu/real-estate-scripts/scripts/script_master_all.py >> /home/ubuntu/cron.log 2>&1
+30 3 * * * /usr/bin/python3 /home/ubuntu/real-estate-scripts/scripts/send_email.py >> /home/ubuntu/email.log 2>&1
+```
+## 2️⃣ Verify Execution
+
+Check logs:
+
+```cat /home/ubuntu/cron.log
+cat /home/ubuntu/email.log
+```
+📧 Email Report Automation
+
+The send_email.py script emails the final processed file to fedora@gmail.com daily.
+Uses SendGrid API (Free for 100 emails/day).
