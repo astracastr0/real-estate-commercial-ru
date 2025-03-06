@@ -1,0 +1,6 @@
+requests
+pandas
+numpy
+argparse
+geopy
+sendgrid
