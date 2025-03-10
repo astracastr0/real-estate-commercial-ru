@@ -26,6 +26,8 @@ def run_script_master_for_areas(areas, api_key, script_master_path, output_direc
             df['Area'] = area  # Optionally add a column to denote the area
             combined_df = pd.concat([combined_df, df], ignore_index=True)
 
+    print("Current column order:", list(combined_df.columns))
+    
     # Save the combined DataFrame to a CSV file
     combined_csv_path = os.path.join(output_directory, f'combined_enriched_output_{current_date}.csv')
     combined_df.to_csv(combined_csv_path, index=False)
