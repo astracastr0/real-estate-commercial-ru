@@ -45,6 +45,12 @@ def run_script_master_for_areas(areas, api_key, script_master_path, output_direc
             df = pd.read_csv(enriched_output_csv)
             df['Area'] = area  # Optionally add a column to denote the area
             combined_df = pd.concat([combined_df, df], ignore_index=True)
+    
+    # Define the desired column order
+    desired_column_order = ['id', 'url', 'geo_oblast', 'geo_okrug', 'geo_raion', 'geo_poselenie', 'geo_metro', 'geo_address_user', 'totalArea', 'buildYear', 'houseFinishDate1', 'isFinished', 'floorsCount', 'price', 'price_per_meter', 'vatPrice', 'vatType', 'median_price_per_m2_month', 'median_payback_months', 'offer_date', 'creationDate', 'geo_lng', 'geo_lat', 'description', 'jkUrl', 'geo_jk', 'officeType', 'category', 'layout', 'user_name', 'basicProfiScore', 'isPro', 'dealType', 'pricePerUnitAreaPerYearRur', 'priceTotalPerMonthRur', 'vatPriceTotalPerMonthRur', 'geo_okrug_id', 'geo_raion_id', 'geo_poselenie_id', 'userId', 'photo_full_urls', 'photo_thumbnailUrls', 'photo_thumbnail2Urls', 'rent_offers', 'num_rent_offers', 'min_price_per_m2_month', 'max_price_per_m2_month', 'avg_price_per_m2_month', 'max_payback_months', 'min_payback_months', 'avg_payback_months', 'total_stores_in_1km', 'pharmacy_n', 'liquor_store_n', 'Area']
+
+    # Reorder columns if they exist in the dataframe
+    combined_df = combined_df[[col for col in desired_column_order if col in combined_df.columns]]
 
     print("Current column order:", list(combined_df.columns))
     logging.info(f"Final column order: {list(combined_df.columns)}")
