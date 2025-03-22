@@ -5,6 +5,7 @@ from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileT
 
 # Set your SendGrid API key here
 SENDGRID_API_KEY = "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"
+current_date = datetime.datetime.now().strftime("%y%m%d")
 
 def send_email_with_attachment(to_email, subject, body, file_path):
     message = Mail(
