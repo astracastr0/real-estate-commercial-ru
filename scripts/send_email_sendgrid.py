@@ -4,11 +4,11 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition
 
 # Set your SendGrid API key here
-SENDGRID_API_KEY = "YOUR_SENDGRID_API_KEY"
+SENDGRID_API_KEY = "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"
 
 def send_email_with_attachment(to_email, subject, body, file_path):
     message = Mail(
-        from_email="your_email@example.com",  # Replace with your verified SendGrid email
+        from_email="fedoseevafedoseeva@gmail.com",  # Replace with your verified SendGrid email
         to_emails=to_email,
         subject=subject,
         plain_text_content=body
@@ -37,8 +37,8 @@ def send_email_with_attachment(to_email, subject, body, file_path):
 
 # Usage example
 send_email_with_attachment(
-    to_email="recipient@example.com",  # Replace with the recipient's email
+    to_email="fedora121@gmail.com",  # Replace with the recipient's email
     subject="Here is your file",
     body="Please find the attached file.",
-    file_path="/home/ubuntu/sample.csv"  # Change to your file path
+    file_path="/real-estate-scripts/output/CSV/combined_enriched_output.csv"  # Change to your file path
 )
