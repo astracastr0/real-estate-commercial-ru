@@ -21,7 +21,7 @@ def run_script_master_for_areas(areas, api_key, script_master_path, output_direc
     for area in areas:
         start_time = time.time()  # Start time for the current region
         current_date = datetime.datetime.now().strftime("%y%m%d")
-        enriched_output_csv = os.path.join(output_directory, f'CSV_{area}/output_enriched_{area}_{current_date}.csv')
+        enriched_output_csv = os.path.join(output_directory, f'csv_{area}/output_enriched_{area}_{current_date}.csv')
 
         # Ensure area-specific directory exists
         os.makedirs(os.path.dirname(enriched_output_csv), exist_ok=True)
@@ -71,6 +71,6 @@ if __name__ == "__main__":
 
     api_key = 'AIzaSyD3uB5Syh7E-tW0a9qLu2EHJ1MqHxqyUu8'  # Replace with your actual API key
     script_master_path = 'real-estate-scripts/scripts/script_master.py'  # Adjust the path to your script_master.py
-    output_directory = 'output/CSV'  # Directory where the combined CSV should be saved
+    output_directory = 'output/csv'  # Directory where the combined CSV should be saved
 
     run_script_master_for_areas(areas, api_key, script_master_path, output_directory)
