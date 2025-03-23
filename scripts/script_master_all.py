@@ -27,7 +27,8 @@ def run_script_master_for_areas(areas, api_key, script_master_path, output_direc
         os.makedirs(os.path.dirname(enriched_output_csv), exist_ok=True)
 
         # Construct and run the command for script_master.py
-        command = f'python3 {script_master_path} {area} --api_key {api_key}'
+        absolute_script_path = os.path.abspath(script_master_path)
+        command = f'python3 {absolute_script_path} {area} --api_key {api_key}'
         logging.info(f"Running script for region: {area}")
         
         try:
