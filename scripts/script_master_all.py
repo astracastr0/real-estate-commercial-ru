@@ -6,7 +6,7 @@ import time  # Import the time module
 import logging  # For better debugging and logging
 
 # Set up logging
-log_file = os.path.join(os.path.dirname(__file__), "script_execution.log")
+log_file = os.path.join(os.path.dirname(__file__), "execution.log")
 logging.basicConfig(filename=log_file, level=logging.INFO, format="%(asctime)s - %(message)s")
 
 def run_script_master_for_areas(areas, api_key, script_master_path, output_directory):
