@@ -19,7 +19,7 @@ def main(area, api_key):
     # Define file paths and directories
     sale_json_dir = f'output/step1_json_data/json_files_sale_{area}_{current_date}'
     rent_json_dir = f'output/step1_json_data/json_files_rent_{area}_{current_date}'
-    output_dir = f'output/CSV/CSV_{area}'
+    output_dir = f'output/csv/csv_{area}'
     sale_output_csv = f'{output_dir}/output_sale_{area}_{current_date}.csv'
     rent_output_csv = f'{output_dir}/output_rent_{area}_{current_date}.csv'
     final_output_csv = f'{output_dir}/output_merged_{area}_{current_date}.csv'
@@ -31,14 +31,14 @@ def main(area, api_key):
     os.makedirs(output_dir, exist_ok=True)
 
     # Step 1: Fetch sale and rent offers (now passing the output directories)
-    #fetch_offers(area, api_key, sale_json_dir, rent_json_dir)  # Updated function call
+    fetch_offers(area, api_key, sale_json_dir, rent_json_dir)  # Updated function call
 
     # Step 2: Process sale and rent offers (script 2 will now use the correct JSON input directories)
-    #process_sale(sale_json_dir, sale_output_csv)
-    #process_rent(rent_json_dir, rent_output_csv)
+    process_sale(sale_json_dir, sale_output_csv)
+    process_rent(rent_json_dir, rent_output_csv)
 
     # Step 3: Combine sale and rent data
-    #join_sale_rent(sale_output_csv, rent_output_csv, final_output_csv)
+    join_sale_rent(sale_output_csv, rent_output_csv, final_output_csv)
 
     # Step 4: Enrich the combined sale and rent data with nearby store information
     enrich_dataset(final_output_csv, api_key, enriched_output_csv)
