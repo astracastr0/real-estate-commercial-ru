@@ -43,5 +43,5 @@ send_email_with_attachment(
     to_email="fedora121@gmail.com",  # Replace with the recipient's email
     subject="Here is your file",
     body="Please find the attached file.",
-    file_path = os.path.join('output/CSV/', f'combined_enriched_output_{current_date}.csv')  # Change to your file path
+    file_path = os.path.join('output/csv/', f'combined_enriched_output_{current_date}.csv')  # Change to your file path
 )
