@@ -213,6 +213,7 @@ def filter_unique_new_ids(combined_df, output_directory_csv):
 
 
 def send_email_with_file(file_path, to_email):
+    logging.info("Preparing to send email...")
     try:
         if file_path.endswith(".xlsx"):
             df = pd.read_excel(file_path)
@@ -223,6 +224,7 @@ def send_email_with_file(file_path, to_email):
     except Exception as e:
         logging.error(f"Failed to read file for subject line: {e}")
         count = 0
+    
 
     # Формируем заголовок: дата в формате «24 марта»
     months = {
