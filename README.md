@@ -84,12 +84,10 @@ python3 scripts/send_email.py --to_email fedora@gmail.com
 ### 📅 Automate on AWS Lightsail
 
 ## 1️⃣ Schedule Daily Execution
-
 ```crontab -e```
-
 To run the scripts daily at 3 AM:
-
-```0 3 * * * cd /home/ubuntu/real-estate-scripts && ./run_all.sh
+```
+0 3 * * * cd /home/ubuntu/real-estate-scripts && ./run_all.sh
 ```
 ## 2️⃣ Verify Execution
 
