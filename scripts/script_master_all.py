@@ -94,7 +94,7 @@ def combine_csvs(areas, output_directory_csv):
     today = datetime.datetime.now().strftime('%y%m%d')
 
     for area in areas:
-        file_path = os.path.join(output_directory_csv, f'csv_{area}/output_enriched_{area}_{today}.csv')
+        file_path = os.path.join(output_directory_csv, f'CSV_{area}/output_enriched_{area}_{today}.csv')
         if os.path.exists(file_path):
             df = pd.read_csv(file_path)
             df['Area'] = area
