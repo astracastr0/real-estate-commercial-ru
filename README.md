@@ -66,7 +66,7 @@ Or add them to a .env file:
 GOOGLE_API_KEY=your-google-api-key
 SENDGRID_API_KEY=your-sendgrid-api-key
 ```
-### 🔥 Usage
+### Usage
 Running All Areas (Fully Automated Pipeline)
 ```
 python3 scripts/script_master_all.py
@@ -84,7 +84,9 @@ python3 scripts/send_email.py --to_email fedora@gmail.com
 ### 📅 Automate on AWS Lightsail
 
 ## 1️⃣ Schedule Daily Execution
-```crontab -e```
+```
+crontab -e
+```
 To run the scripts daily at 3 AM:
 ```
 0 3 * * * cd /home/ubuntu/real-estate-scripts && ./run_all.sh
@@ -92,8 +94,8 @@ To run the scripts daily at 3 AM:
 ## 2️⃣ Verify Execution
 
 Check logs:
-
-```cat ~/cron.log
+```
+cat ~/cron.log
 ```
 📧 Email Report Automation
 
