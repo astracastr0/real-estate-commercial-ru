@@ -1,6 +1,6 @@
 # 📌 Real Estate Data Processing Scripts
 
-This project automates the process of fetching, processing, and analyzing real estate sale and rent listings from **Cian**. It also enriches the data with nearby store information using the **Google Places API** and sends the final report via email.
+This project automates the process of fetching, processing, and analyzing real estate sale and rent listings from **CIAN**. It also enriches the data with nearby store information using the **Google Places API** and sends the final report via email.
 
 ## Features
 
@@ -8,7 +8,7 @@ This project automates the process of fetching, processing, and analyzing real e
 - **Process & clean data** into structured CSVs
 - **Join sale & rent offers** to analyze investment potential
 - **Enrich data** with nearby stores using Google Places API
-- **Automate execution** on Oracle Cloud Free Tier VM
+- **Automate execution** on AWS Lightsail
 - **Send final report via email** daily
 
 ---
@@ -27,10 +27,10 @@ real-estate-scripts/
 │   ├── script4_google_nearby_cat.py
 │   ├── script_master.py
 │   ├── script_master_all.py
-│   ├── send_email.py    # Email automation script
+│   ├── send_email_sendgrid.py    # Email automation script
 ├── config/
 │   ├── areas.json       # Optional area mappings
-├── data/
+├── output/
 │   ├── sample_json/
 │   ├── output_csv/
 └── LICENSE
@@ -43,7 +43,7 @@ real-estate-scripts/
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/real-estate-scripts.git
+git clone https://astracastr0:<your_token>/astracastr0/real-estate-scripts.git
 cd real-estate-scripts
 ```
 
@@ -53,8 +53,8 @@ pip3 install -r requirements.txt
 ```
 ### 3️⃣ Set Up API Keys
 
-Google Places API Key: Required for store enrichment.
 SendGrid API Key: Required for email automation.
+Google Places API Key: Required for store enrichment.
 
 Store them as environment variables:
 ```
@@ -67,39 +67,37 @@ GOOGLE_API_KEY=your-google-api-key
 SENDGRID_API_KEY=your-sendgrid-api-key
 ```
 ### 🔥 Usage
-
-Running a Single Area
-```
-python3 scripts/script_master.py NAO --api_key $GOOGLE_API_KEY
-```
 Running All Areas (Fully Automated Pipeline)
 ```
 python3 scripts/script_master_all.py
 ```
+Running a Single Area
+```
+python3 scripts/script_master.py NAO --api_key $GOOGLE_API_KEY
+```
+
 Sending the Final Report via Email
 ```
 python3 scripts/send_email.py --to_email fedora@gmail.com
 ```
 
-### 📅 Automate on Oracle Cloud Free Tier
+### 📅 Automate on AWS Lightsail
 
 ## 1️⃣ Schedule Daily Execution
 
 ```crontab -e```
 
-Add these lines to run the scripts daily at 3 AM:
+To run the scripts daily at 3 AM:
 
-```0 3 * * * /usr/bin/python3 /home/ubuntu/real-estate-scripts/scripts/script_master_all.py >> /home/ubuntu/cron.log 2>&1
-30 3 * * * /usr/bin/python3 /home/ubuntu/real-estate-scripts/scripts/send_email.py >> /home/ubuntu/email.log 2>&1
+```0 3 * * * cd /home/ubuntu/real-estate-scripts && ./run_all.sh
 ```
 ## 2️⃣ Verify Execution
 
 Check logs:
 
-```cat /home/ubuntu/cron.log
-cat /home/ubuntu/email.log
+```cat ~/cron.log
 ```
 📧 Email Report Automation
 
-The send_email.py script emails the final processed file daily.
+The send_email_sendgrid.py script emails the final processed file daily.
 Uses SendGrid API (Free for 100 emails/day).
