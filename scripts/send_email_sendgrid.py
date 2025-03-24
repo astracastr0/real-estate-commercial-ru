@@ -48,7 +48,7 @@ def generate_preview_html(file_path, max_items=10):
 
             block += "</div>"
 
-            # 📷 Фото: берём до 3 ссылок
+            # Фото: берём до 3 ссылок
             image_urls = []
             if isinstance(photos, str):
                 if ';' in photos:
@@ -129,6 +129,10 @@ def send_email_with_attachment(to_email, subject, body, file_path, is_excel):
         sg = SendGridAPIClient("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")
         response = sg.send(message)
         print(f"Email sent to {to_email}! Status code: {response.status_code}")
+        print("Пытаюсь вложить файл:", file_name)
+        print("Текущая директория:", os.getcwd())
+        print("Файл существует:", os.path.exists(file_name))
+        print("Текст письма:", message.html_content)
     except Exception as e:
         print(f"Error sending email: {e}")
 
