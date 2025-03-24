@@ -129,9 +129,9 @@ def send_email_with_attachment(to_email, subject, body, file_path, is_excel):
         sg = SendGridAPIClient("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")
         response = sg.send(message)
         print(f"Email sent to {to_email}! Status code: {response.status_code}")
-        print("Пытаюсь вложить файл:", file_name)
+        print("Пытаюсь вложить файл:", file_path)
         print("Текущая директория:", os.getcwd())
-        print("Файл существует:", os.path.exists(file_name))
+        print("Файл существует:", os.path.exists(file_path))
         print("Текст письма:", message.html_content)
     except Exception as e:
         print(f"Error sending email: {e}")
