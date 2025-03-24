@@ -32,31 +32,43 @@ def generate_preview_html(file_path, max_items=10):
             url = getattr(row, 'url', '#')
             jk = getattr(row, 'geo_jk', '')
             jkUrl = getattr(row, 'jkUrl', '')
-            photos = getattr(row, 'photo_full_urls', '')
+            photos = getattr(row, 'photo_thumbnailUrls', '')
             image_url = photos.split(',')[0].strip() if isinstance(photos, str) and photos else None
 
             block = f"""
                 <div style="display: flex; align-items: flex-start; border:1px solid #ccc; padding:10px; margin:10px 0; font-family:Arial, sans-serif;">
                     <div style="flex: 1; padding-right: 15px;">
                         <h3>{i}. {oblast}, {okrug}</h3>
-                        <p><strong>📍 Адрес:</strong> {address}</p>
-                        <p><strong>💰 Цена:</strong> {price}</p>
-                        <p><strong>📊 Окупаемость:</strong> {payback} мес.</p>
-                        <p><strong>🆔 ID:</strong> {obj_id}</p>
-                        <p><a href="{url}" target="_blank">🔗 Открыть объект</a></p>
+                        <p><strong>📍 </strong> {address}</p>
+                        <p><strong>Цена:</strong> {price}</p>
+                        <p><strong>Окупаемость:</strong> {payback} мес.</p>
+                        <p><a href="{url}" target="_blank">🔗 ID: {obj_id}</a></p>
+                        <p><a href="{jkUrl}" target="_blank">🏢 ЖК: {jkUrl}</a></p>
             """
-
-            if jkUrl and isinstance(jkUrl, str):
-                block += f'<p><a href="{jkUrl}" target="_blank">🏢 ЖК: {jkUrl}</a></p>'
 
             block += "</div>"
 
-            if image_url and image_url.startswith("http"):
-                block += f"""
-                    <div style="min-width: 200px;">
-                        <img src="{image_url}" style="max-width: 200px; border-radius: 4px;">
-                    </div>
-                """
+            # 📷 Фото: берём до 3 ссылок
+            image_urls = []
+            if isinstance(photos, str):
+                if ';' in photos:
+                    image_urls = [p.strip() for p in photos.split(';') if p.strip()]
+                else:
+                    image_urls = [p.strip() for p in photos.split(',') if p.strip()]
+                image_urls = image_urls[:3]  # только первые 3
+
+            if image_urls:
+                block += '<div style="margin-top:10px; text-align: center;">'
+                for img in image_urls:
+                    if img.startswith("http"):
+                        block += f'''
+                            <div style="margin-bottom: 6px;">
+                                <img src="{img}" style="width:100%; max-width:150px; border-radius:4px; display:inline-block;">
+                            </div>
+                        '''
+                block += '</div>'
+
+
 
             block += "</div>"
             html_blocks.append(block)
