@@ -21,7 +21,7 @@ def run_script_master_for_areas(areas, api_key, script_master_path, output_direc
     for area in areas:
         start_time = time.time()  # Start time for the current region
         current_date = datetime.datetime.now().strftime("%y%m%d")
-        enriched_output_csv = os.path.join(output_directory, f'csv_{area}/output_enriched_{area}_{current_date}.csv')
+        enriched_output_csv = os.path.join(output_directory, f'CSV_{area}/output_enriched_{area}_{current_date}.csv')
 
         # Ensure area-specific directory exists
         os.makedirs(os.path.dirname(enriched_output_csv), exist_ok=True)
