@@ -20,7 +20,7 @@ def main(area, api_key):
     output_dir = f'output'
     sale_json_dir = f'{output_dir}/step1_json_data/json_files_sale_{area}_{current_date}'
     rent_json_dir = f'{output_dir}/step1_json_data/json_files_rent_{area}_{current_date}'
-    output_dir_area = f'{output_dir}/csv/csv_{area}'
+    output_dir_area = f'{output_dir}/CSV/CSV_{area}'
     sale_output_csv = f'{output_dir_area}/output_sale_{area}_{current_date}.csv'
     rent_output_csv = f'{output_dir_area}/output_rent_{area}_{current_date}.csv'
     final_output_csv = f'{output_dir_area}/output_merged_{area}_{current_date}.csv'
