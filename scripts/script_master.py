@@ -17,13 +17,14 @@ def main(area, api_key):
     current_date = datetime.datetime.now().strftime("%y%m%d")
 
     # Define file paths and directories
-    sale_json_dir = f'output/step1_json_data/json_files_sale_{area}_{current_date}'
-    rent_json_dir = f'output/step1_json_data/json_files_rent_{area}_{current_date}'
-    output_dir = f'output/csv/csv_{area}'
-    sale_output_csv = f'{output_dir}/output_sale_{area}_{current_date}.csv'
-    rent_output_csv = f'{output_dir}/output_rent_{area}_{current_date}.csv'
-    final_output_csv = f'{output_dir}/output_merged_{area}_{current_date}.csv'
-    enriched_output_csv = f'{output_dir}/output_enriched_{area}_{current_date}.csv'  # Path for the enriched output CSV file
+    output_dir = f'output'
+    sale_json_dir = f'{output_dir}/step1_json_data/json_files_sale_{area}_{current_date}'
+    rent_json_dir = f'{output_dir}/step1_json_data/json_files_rent_{area}_{current_date}'
+    output_dir_area = f'{output_dir}/csv/csv_{area}'
+    sale_output_csv = f'{output_dir_area}/output_sale_{area}_{current_date}.csv'
+    rent_output_csv = f'{output_dir_area}/output_rent_{area}_{current_date}.csv'
+    final_output_csv = f'{output_dir_area}/output_merged_{area}_{current_date}.csv'
+    enriched_output_csv = f'{output_dir_area}/output_enriched_{area}_{current_date}.csv'  # Path for the enriched output CSV file
 
     # Ensure directories exist before calling scripts
     os.makedirs(sale_json_dir, exist_ok=True)
