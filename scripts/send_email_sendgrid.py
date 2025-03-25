@@ -132,7 +132,6 @@ def send_email_with_attachment(to_email, subject, body, file_path, is_excel):
         print("Пытаюсь вложить файл:", file_path)
         print("Текущая директория:", os.getcwd())
         print("Файл существует:", os.path.exists(file_path))
-        print("Текст письма:", message.html_content)
     except Exception as e:
         print(f"Error sending email: {e}")
 
