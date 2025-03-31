@@ -13,7 +13,8 @@ api_key = 'AIzaSyD3uB5Syh7E-tW0a9qLu2EHJ1MqHxqyUu8'
 script_master_path = 'scripts/script_master.py'
 output_directory = 'output'
 output_directory_csv = f'{output_directory}/CSV'
-to_email = 'fedora121@gmail.com'
+to_email = 'fedora121@gmail.com', 'deminr@ya.ru', 'julia@dove.rent, oleg@dove.rent, maksim@dove.rent, slava@dove.rent'
+
 
 # Set up logging
 os.makedirs(output_directory, exist_ok=True)
