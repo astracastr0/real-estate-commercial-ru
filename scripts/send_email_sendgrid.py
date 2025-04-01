@@ -96,6 +96,10 @@ is_excel = file_path.endswith(".xlsx")
 def send_email_with_attachment(to_email, subject, body, file_path, is_excel):
     html_content = generate_preview_html(file_path)
 
+    # Преобразуем строку с email'ами в список, если надо
+    if isinstance(to_email, str) and ',' in to_email:
+        to_email = [email.strip() for email in to_email.split(',')]
+    
     message = Mail(
         from_email="fedoseevafedoseeva@gmail.com",
         to_emails=to_email,
