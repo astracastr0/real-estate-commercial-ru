@@ -13,7 +13,8 @@ api_key = 'AIzaSyD3uB5Syh7E-tW0a9qLu2EHJ1MqHxqyUu8'
 script_master_path = 'scripts/script_master.py'
 output_directory = 'output'
 output_directory_csv = f'{output_directory}/CSV'
-to_email = 'fedora121@gmail.com', 'deminr@ya.ru', 'julia@dove.rent, oleg@dove.rent, maksim@dove.rent, slava@dove.rent'
+to_email = "fedora121@gmail.com, deminr@ya.ru, julia@dove.rent, oleg@dove.rent, maksim@dove.rent, slava@dove.rent"
+
 
 
 # Set up logging
@@ -241,11 +242,12 @@ def send_email_with_file(file_path, to_email):
 
     command = (
         f'{sys.executable} scripts/send_email_sendgrid.py '
-        f'--to_email {to_email} '
+        f'--to_email "{to_email}" '
         f'--file_name {os.path.basename(file_path)} '
-        f'--subject "{subject}"   '
+        f'--subject "{subject}" '
         f'--body "Новые объявления во вложении."'
     )
+
 
     
     try:
