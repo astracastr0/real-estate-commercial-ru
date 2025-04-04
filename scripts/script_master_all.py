@@ -260,8 +260,8 @@ def send_email_with_file(file_path, to_email):
 if __name__ == "__main__":
     # CONTROL SWITCHES
     run_parts = {
-        "run_areas": False,
-        "combine": False,
+        "run_areas": True,
+        "combine": True,
         "delta": True,
         "send": True
         }
