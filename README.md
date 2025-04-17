@@ -75,6 +75,12 @@ Running a Single Area
 ```
 python3 scripts/script_master.py NAO --api_key $GOOGLE_API_KEY
 ```
+Running a Single Area - only raw JSON files from CIAN
+```
+python3 scripts/script1_get_sale_rent_offers.py NAO \
+  --sale_output_dir output/json_files_sale_NAO \
+  --rent_output_dir output/json_files_rent_NAO
+```
 
 Sending the Final Report via Email
 ```
