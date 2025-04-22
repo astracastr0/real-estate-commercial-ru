@@ -7,7 +7,8 @@ import logging
 import sys
 
 # Configs
-areas = ['NAO', 'CAO', 'VAO', 'ZAO', 'SAO', 'SZAO', 'SVAO', 'UVAO', 'UAO', 'UZAO', 'ZelAO']
+areas = ['SVAO', 'UVAO', 'UAO', 'UZAO', 'ZelAO']
+# ['NAO', 'CAO', 'VAO', 'ZAO', 'SAO', 'SZAO', 'SVAO', 'UVAO', 'UAO', 'UZAO', 'ZelAO']
 
 api_key = 'AIzaSyD3uB5Syh7E-tW0a9qLu2EHJ1MqHxqyUu8'
 script_master_path = 'scripts/script_master.py'
@@ -261,9 +262,9 @@ if __name__ == "__main__":
     # CONTROL SWITCHES
     run_parts = {
         "run_areas": True,
-        "combine": True,
-        "delta": True,
-        "send": True
+        "combine": False,
+        "delta": False,
+        "send": False
         }
 
     combined_df, new_file_path = None, None
