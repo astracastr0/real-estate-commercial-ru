@@ -7,8 +7,7 @@ import logging
 import sys
 
 # Configs
-areas = [ 'UZAO', 'ZelAO']
-# ['NAO', 'CAO', 'VAO', 'ZAO', 'SAO', 'SZAO', 'SVAO', 'UVAO', 'UAO', 'UZAO', 'ZelAO']
+areas = ['NAO', 'CAO', 'VAO', 'ZAO', 'SAO', 'SZAO', 'SVAO', 'UVAO', 'UAO', 'UZAO', 'ZelAO']
 
 api_key = 'AIzaSyD3uB5Syh7E-tW0a9qLu2EHJ1MqHxqyUu8'
 script_master_path = 'scripts/script_master.py'
@@ -261,10 +260,10 @@ def send_email_with_file(file_path, to_email):
 if __name__ == "__main__":
     # CONTROL SWITCHES
     run_parts = {
-        "run_areas": True,
-        "combine": False,
-        "delta": False,
-        "send": False
+        "run_areas": False,
+        "combine": True,
+        "delta": True,
+        "send": True
         }
 
     combined_df, new_file_path = None, None
