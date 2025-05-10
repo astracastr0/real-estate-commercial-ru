@@ -263,7 +263,7 @@ if __name__ == "__main__":
         "run_areas": False,
         "combine": True,
         "delta": True,
-        "send": False
+        "send": True
         }
 
     combined_df, new_file_path = None, None
