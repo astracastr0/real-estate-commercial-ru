@@ -89,7 +89,7 @@ def process_sale_jsons(input_directory, output_file):
                         "category": item.get("category", ""),
                         "totalArea": item.get("totalArea", 0),
                         "buildYear": buildYear,
-                        floorNumber = item.get("floorNumber", "")
+                        "floorNumber": item.get("floorNumber", 0),
                         "floorsCount": item.get("building", {}).get("floorsCount", 0),
                         "url": item.get("fullUrl", ""),
                         "description": description,
