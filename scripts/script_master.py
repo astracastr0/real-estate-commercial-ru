@@ -32,7 +32,7 @@ def main(area, api_key):
     os.makedirs(output_dir, exist_ok=True)
 
     # Step 1: Fetch sale and rent offers (now passing the output directories)
-    fetch_offers(area, api_key, sale_json_dir, rent_json_dir)  # Updated function call
+    # fetch_offers(area, api_key, sale_json_dir, rent_json_dir)  # Updated function call
 
     # Step 2: Process sale and rent offers (script 2 will now use the correct JSON input directories)
     process_sale(sale_json_dir, sale_output_csv)
