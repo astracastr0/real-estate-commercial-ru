@@ -83,11 +83,13 @@ def process_sale_jsons(input_directory, output_file):
                         "dealType": item.get("dealType", ""),
 
                         "offer_date": datetime.fromtimestamp(item.get("addedTimestamp", 0)),
+                        
                         "creationDate": item.get("creationDate", ""),
                         "officeType": item.get("officeType", ""),
                         "category": item.get("category", ""),
                         "totalArea": item.get("totalArea", 0),
                         "buildYear": buildYear,
+                        "floorNumber": floorNumber,
                         "floorsCount": item.get("building", {}).get("floorsCount", 0),
                         "url": item.get("fullUrl", ""),
                         "description": description,
@@ -127,7 +129,7 @@ def process_sale_jsons(input_directory, output_file):
     with open(output_file, 'w', newline='', encoding='utf-8') as csv_file:
         fieldnames = ["id", "url", "user_name", "geo_oblast", "geo_okrug", "geo_raion", "geo_poselenie", "geo_metro", "geo_address_user",
                         "totalArea", 
-                      "buildYear", "houseFinishDate1","isFinished","floorsCount", "price", "price_per_meter", 
+                      "buildYear", "houseFinishDate1","isFinished", "floorNumber", "floorsCount", "price", "price_per_meter", 
                       "vatPrice", "vatType", "offer_date", "creationDate",
                        "geo_lng", "geo_lat", "description", 
                       "jkUrl", "geo_jk","officeType", "category","layout", "basicProfiScore", "isPro", 
