@@ -96,10 +96,27 @@ def combine_csvs(areas, output_directory_csv):
 
     for area in areas:
         file_path = os.path.join(output_directory_csv, f'CSV_{area}/output_enriched_{area}_{today}.csv')
+       # if os.path.exists(file_path):
+       #     df = pd.read_csv(file_path)
+       #     df['Area'] = area
+       #     combined_df = pd.concat([combined_df, df], ignore_index=True)
         if os.path.exists(file_path):
+            if os.path.getsize(file_path) == 0:
+                logging.warning(f"(!) File {file_path} is empty — skipping.")
+                continue
+        
             df = pd.read_csv(file_path)
+            if df.empty:
+                logging.warning(f"(!) DataFrame for {area} is empty — skipping.")
+                continue
+        
             df['Area'] = area
+            logging.info(f"Loaded {len(df)} rows for {area}")
+            logging.debug(f"Columns in {area}: {df.columns.tolist()}")
             combined_df = pd.concat([combined_df, df], ignore_index=True)
+        else:
+            logging.warning(f"(x) File not found for area {area}: {file_path}")
+
 
     # Apply desired column order
     desired_columns = ['id', 'url', 'geo_oblast', 'geo_okrug', 'geo_raion', 'geo_poselenie', 'geo_metro', 'geo_address_user', 'totalArea', 'buildYear', 'houseFinishDate1', 'isFinished', 
@@ -120,6 +137,7 @@ def combine_csvs(areas, output_directory_csv):
     combined_df.to_csv(combined_path, index=False)
     logging.info(f"Combined CSV saved to {combined_path}")
     return combined_df, combined_path
+
 
 
 def filter_new_listings(combined_df, output_directory_csv, combined_path=None):
