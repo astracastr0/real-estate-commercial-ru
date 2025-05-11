@@ -99,7 +99,9 @@ def send_to_bitrix_from_csv(csv_path):
             response = requests.post(url, headers=headers, data=json.dumps(payload))
 
             if response.status_code == 200:
-                log_result(f"Добавлено: {row['id']}")
+                json_response = response.json()
+                bitrix_id = json_response.get("result", {}).get("item", {}).get("id", "UNKNOWN")
+                log_result(f"Bitrix ID: {bitrix_id}, xmlId: {row['id']}")
             else:
                 log_result(f"Ошибка: {row['id']} — {response.status_code} | {response.text}")
 
