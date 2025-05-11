@@ -18,7 +18,7 @@ def join_sale_rent(sale_csv_path, rent_csv_path, output_csv_path):
     filtered_sales_df = sales_df[
         (sales_df['officeType'] != 'business') &
         (sales_df['layout'] != 'mixed') &
-        (sales_df['layout'] != 'cabinet')
+        (sales_df['layout'] != 'cabinet') &
         (sales_df['creationDate'] >= cutoff_date) &
         (sales_df['buildYear'] >= 2007) &
         (sales_df['isFinished'] != 'FALSE') &
