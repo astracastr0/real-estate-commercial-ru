@@ -5,6 +5,7 @@ import datetime
 import time
 import logging
 import sys
+from scripts.script5_send_to_bitrix import send_to_bitrix_from_csv
 
 # Configs
 areas = ['NAO', 'CAO', 'VAO', 'ZAO', 'SAO', 'SZAO', 'SVAO', 'UVAO', 'UAO', 'UZAO', 'ZelAO']
@@ -266,8 +267,6 @@ def send_email_with_file(file_path, to_email):
         f'--subject "{subject}" '
         f'--body "Новые объявления во вложении."'
     )
-
-
     
     try:
         subprocess.run(command, shell=True, check=True)
@@ -302,10 +301,18 @@ if __name__ == "__main__":
         else:
             logging.error(f"Combined CSV not found at {combined_path}")
 
-
     if run_parts["delta"] and combined_df is not None:
         new_file_path = filter_unique_new_ids(combined_df, output_directory_csv)
 
-
     if run_parts["send"] and new_file_path:
         send_email_with_file(new_file_path, to_email)
+        
+        # формируем CSV и отправляем в Bitrix CRM
+        csv_path = new_file_path.replace(".xlsx", ".csv")
+        try:
+            df = pd.read_excel(new_file_path)
+            df.to_csv(csv_path, index=False)
+            send_to_bitrix_from_csv(csv_path)
+        except Exception as e:
+            logging.error(f"Ошибка при загрузке в Bitrix: {e}")
+
