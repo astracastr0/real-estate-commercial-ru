@@ -281,7 +281,8 @@ if __name__ == "__main__":
         "run_areas": True,
         "combine": True,
         "delta": True,
-        "send": True
+        "send": True,
+        "bitrix": True
         }
 
     combined_df, new_file_path = None, None
@@ -306,8 +307,8 @@ if __name__ == "__main__":
 
     if run_parts["send"] and new_file_path:
         send_email_with_file(new_file_path, to_email)
-        
-        # формируем CSV и отправляем в Bitrix CRM
+
+    if run_parts["bitrix"] and new_file_path:
         csv_path = new_file_path.replace(".xlsx", ".csv")
         try:
             df = pd.read_excel(new_file_path)
@@ -315,4 +316,5 @@ if __name__ == "__main__":
             send_to_bitrix_from_csv(csv_path)
         except Exception as e:
             logging.error(f"Ошибка при загрузке в Bitrix: {e}")
+
 
