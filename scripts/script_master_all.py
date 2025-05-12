@@ -20,7 +20,7 @@ to_email = "fedora121@gmail.com, deminr@ya.ru, julia@dove.rent, oleg@dove.rent, 
 
 # Set up logging
 os.makedirs(output_directory, exist_ok=True)
-log_file = os.path.join(output_directory, "execution.log")
+log_file = os.path.join("logs", "execution.log")
 #logging.basicConfig(filename=log_file, level=logging.INFO, format="%(asctime)s - %(message)s")
 
 file_handler = logging.FileHandler(log_file)
