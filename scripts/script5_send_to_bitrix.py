@@ -52,9 +52,17 @@ def send_to_bitrix_from_csv(csv_path):
             # Налог
             tax_value = 0 if pd.isna(row.get("vatPrice")) else row["vatPrice"]
 
-            # УСН
+            # Тип Налога
             vat_type = row.get("vatType", "").lower()
-            tax_type_value = "УСН" if vat_type == "usn" else None
+            
+            # outdated - tax_type_value = "УСН" if vat_type == "usn" else None
+
+            #tax_type_value_id for custom field "Тип налога" ufCrm9_1747037770, 1495 ->"УСН", "ID":"1497"->"НДС включен"
+            if vat_type == "usn":
+                tax_type_value_id = 1495 
+            elif vat_type == "included":
+                tax_type_value_id = 1497 
+            else None 
 
             fields = {
                 "assignedById": 1,
@@ -86,7 +94,8 @@ def send_to_bitrix_from_csv(csv_path):
                 "ufCrm9_1733996637": str(row["description"])[:2500],
                 "ufCrm9_1737363589516": f"https://yandex.ru/maps/?text={row['geo_address_user']}",
                 "taxValue": tax_value,
-                "ufCrm9_1745581414925": tax_type_value
+                # "ufCrm9_1745581414925": tax_type_value
+                "ufCrm9_1747037770": tax_type_value_id
             }
 
             # Удалить пустые
