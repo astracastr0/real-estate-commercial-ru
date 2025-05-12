@@ -4,14 +4,7 @@ import argparse
 import json
 import os
 import datetime
-
-LOG_FILE = os.path.join("logs", "bitrix_upload.log")
-os.makedirs("logs", exist_ok=True)
-
-def log_result(message):
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open(LOG_FILE, "a", encoding="utf-8") as f:
-        f.write(f"[{timestamp}] {message}\n")
+import logging 
 
 def send_to_bitrix_from_csv(csv_path):
     df = pd.read_csv(csv_path)
@@ -110,12 +103,12 @@ def send_to_bitrix_from_csv(csv_path):
             if response.status_code == 200:
                 json_response = response.json()
                 bitrix_id = json_response.get("result", {}).get("item", {}).get("id", "UNKNOWN")
-                log_result(f"Bitrix ID: {bitrix_id}, xmlId: {row['id']}")
+                logging.info(f"Bitrix ID: {bitrix_id}, xmlId: {row['id']}")
             else:
-                log_result(f"Ошибка: {row['id']} — {response.status_code} | {response.text}")
+                logging.info(f"Ошибка: {row['id']} — {response.status_code} | {response.text}")
 
         except Exception as e:
-            log_result(f"Ошибка при обработке ID {row.get('id')}: {str(e)}")
+            logging.info(f"Ошибка при обработке ID {row.get('id')}: {str(e)}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
