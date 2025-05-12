@@ -5,7 +5,7 @@ import datetime
 import time
 import logging
 import sys
-from scripts.script5_send_to_bitrix import send_to_bitrix_from_csv
+from script5_send_to_bitrix import send_to_bitrix_from_csv
 
 # Configs
 areas = ['NAO', 'CAO', 'VAO', 'ZAO', 'SAO', 'SZAO', 'SVAO', 'UVAO', 'UAO', 'UZAO', 'ZelAO']
