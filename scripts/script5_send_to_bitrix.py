@@ -55,7 +55,8 @@ def send_to_bitrix_from_csv(csv_path):
                 tax_type_value_id = 1495 
             elif vat_type == "included":
                 tax_type_value_id = 1497 
-            else None 
+            else:
+                tax_type_value_id = None 
 
             fields = {
                 "assignedById": 1,
