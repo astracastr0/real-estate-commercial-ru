@@ -79,7 +79,7 @@ def send_to_bitrix_from_csv(csv_path):
                 "ufCrm9_1734010228771": f"{acceptable_price}|RUB", # Приемлемая цена (расчет 8 лет окупаемости по аренде)
                 "ufCrm9_1733994865000": str(price_per_m),
                 "ufCrm9_1737107006262": f"{median_per_m_month}|RUB",
-                "ufCrm9_1733219044503": str(int(annual_rent)),
+                "ufCrm9_1733219044503": str(int(annual_rent)), # Стоимость аренды объекта
                 "ufCrm9_1734504311555": payback_years,
                 "ufCrm9_1733995226170": floor_info,
                 "ufCrm9_1745585756737": creation_iso,
