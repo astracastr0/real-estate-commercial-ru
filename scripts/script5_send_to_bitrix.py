@@ -75,7 +75,7 @@ def send_to_bitrix_from_csv(csv_path):
                 "opportunity": price,
                 "ufCrm9_1733219023950": city_id,
                 "ufCrm9_1731916825457": f"{row['geo_address_user']}|{row['geo_lat']};{row['geo_lng']}",
-                "ufCrm9_1733218987592": str(row["totalArea"]),
+                "ufCrm9_1733218987592": str(row["totalArea"]), # Площадь
                 "ufCrm9_1734010228771": f"{acceptable_price}|RUB", # Приемлемая цена (расчет 8 лет окупаемости по аренде)
                 "ufCrm9_1733994865000": str(price_per_m),
                 "ufCrm9_1737107006262": f"{median_per_m_month}|RUB",
