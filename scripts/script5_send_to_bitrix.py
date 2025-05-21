@@ -23,6 +23,7 @@ def send_to_bitrix_from_csv(csv_path):
             median_per_m_month = round(row["median_price_per_m2_month"])
             annual_rent = median_per_m_month * 12
             payback_years = round(row["median_payback_months"] / 12, 1)
+            acceptable_price = round(row["median_price_per_m2_month"] * row["totalArea"] * 12 * 8, 1)
 
             # Город ID
             oblast = str(row.get("geo_oblast", "")).lower()
@@ -75,7 +76,7 @@ def send_to_bitrix_from_csv(csv_path):
                 "ufCrm9_1733219023950": city_id,
                 "ufCrm9_1731916825457": f"{row['geo_address_user']}|{row['geo_lat']};{row['geo_lng']}",
                 "ufCrm9_1733218987592": str(row["totalArea"]),
-                "ufCrm9_1734010228771": f"{price}|RUB",
+                "ufCrm9_1734010228771": f"{acceptable_price}|RUB", # Приемлемая цена (расчет 8 лет окупаемости по аренде)
                 "ufCrm9_1733994865000": str(price_per_m),
                 "ufCrm9_1737107006262": f"{median_per_m_month}|RUB",
                 "ufCrm9_1733219044503": str(int(annual_rent)),
