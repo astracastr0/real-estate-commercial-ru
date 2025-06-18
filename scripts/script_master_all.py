@@ -19,10 +19,12 @@ to_email = "fedora121@gmail.com, deminr@ya.ru, julia@dove.rent, oleg@dove.rent, 
 
 
 # Set up logging
-# os.makedirs(output_directory, exist_ok=True)
+
+# Настраиваем путь к лог-файлу
+log_file = os.path.join(os.path.dirname(__file__), '../logs/execution.log')
+
+# Создаём папку logs, если она ещё не существует
 os.makedirs(os.path.dirname(log_file), exist_ok=True)
-log_file = os.path.join("logs", "execution.log")
-#logging.basicConfig(filename=log_file, level=logging.INFO, format="%(asctime)s - %(message)s")
 
 file_handler = logging.FileHandler(log_file)
 stream_handler = logging.StreamHandler(sys.stdout)
