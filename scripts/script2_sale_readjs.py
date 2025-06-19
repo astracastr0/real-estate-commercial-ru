@@ -126,6 +126,7 @@ def process_sale_jsons(input_directory, output_file):
 
 
     # Write the processed data to a CSV file
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
     with open(output_file, 'w', newline='', encoding='utf-8') as csv_file:
         fieldnames = ["id", "url", "user_name", "geo_oblast", "geo_okrug", "geo_raion", "geo_poselenie", "geo_metro", "geo_address_user",
                         "totalArea", 
