@@ -100,7 +100,7 @@ def join_sale_rent(sale_csv_path, rent_csv_path, output_csv_path):
     result_df["median_payback_months"] = (result_df["price_per_meter"] / result_df["median_price_per_m2_month"]
 ).round(0)
     # result_df = result_df[result_df["avg_payback_months"] <= 100]
-    result_df = result_df[result_df["median_payback_months"] <= 105]
+    result_df = result_df[result_df["median_payback_months"] <= 96]
 
 
     # Save the result to a new CSV file
