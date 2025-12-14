@@ -1,36 +1,46 @@
-
 import asyncio
-from playwright.async_api import async_playwright
 import json
+from playwright.async_api import async_playwright
 
-
-
+STATIC_BH = "EkIiSGVhZGxlc3NDaHJvbWUiO3Y9IjE0MyIsICJDaHJvbWl1bSI7dj0iMTQzIiwgIk5vdCBBKEJyYW5kIjt2PSIyNCIqAj8wOgcibWFjT1MiYLzx/MkGaiHcytG2Abvxn6sE+taGzAjS0e3rA/y5r/8H3/2HuwXzgQI="
 
 async def main():
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         context = await browser.new_context()
+
+        # ⬇️ Устанавливаем bh cookie вручную до загрузки страницы
+        await context.add_cookies([{
+            'name': 'bh',
+            'value': STATIC_BH,
+            'domain': '.cian.ru',
+            'path': '/',
+            'httpOnly': False,
+            'secure': True,
+            'sameSite': 'Lax'
+        }])
+
         page = await context.new_page()
 
+        # ⬇️ Заход на сайт, чтобы получить другие cookies (например _CIAN_GK)
         await page.goto("https://www.cian.ru/")
         await page.wait_for_timeout(3000)
 
+        # ⬇️ Собираем все cookies
         cookies = await context.cookies()
         cookie_str = "; ".join(f"{c['name']}={c['value']}" for c in cookies)
 
+        # ⬇️ Создаём отдельный request context
         request_context = await p.request.new_context(
             base_url="https://api.cian.ru",
             extra_http_headers={
                 "Content-Type": "application/json",
                 "Origin": "https://www.cian.ru",
                 "Referer": "https://www.cian.ru/",
-                "User-Agent": "Mozilla/5.0 ...",
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
                 "Accept-Language": "ru-RU",
                 "X-Requested-With": "XMLHttpRequest",
-                 "bh":"EkIiSGVhZGxlc3NDaHJvbWUiO3Y9IjE0MyIsICJDaHJvbWl1bSI7dj0iMTQzIiwgIk5vdCBBKEJyYW5kIjt2PSIyNCIqAj8wOgcibWFjT1MiYLzx/MkGaiHcytG2Abvxn6sE+taGzAjS0e3rA/y5r/8H3/2HuwXzgQI=",
-                "Cookie": cookie_str,
-                "bh":"EkIiSGVhZGxlc3NDaHJvbWUiO3Y9IjE0MyIsICJDaHJvbWl1bSI7dj0iMTQzIiwgIk5vdCBBKEJyYW5kIjt2PSIyNCIqAj8wOgcibWFjT1MiYLzx/MkGaiHcytG2Abvxn6sE+taGzAjS0e3rA/y5r/8H3/2HuwXzgQI=",
-                
+                "Cookie": cookie_str  # ⬅️ используем актуальную строку cookie
             }
         )
 
@@ -49,20 +59,22 @@ async def main():
 
         response = await request_context.post(
             "/commercial-search-offers/desktop/v1/offers/get-offers/",
-            data=json.dumps(payload)  # <-- сериализуем вручную
+            data=json.dumps(payload)
         )
+
         print("Status:", response.status)
-        print("cookies:", cookie_str)
+        print("Cookies used:", cookie_str)
         text = await response.text()
         print("Text preview:", text[:500])
 
         try:
             data = json.loads(text)
-            print("Response JSON:", data)
+            print("✅ Response JSON parsed successfully")
         except json.JSONDecodeError:
-            print("❌ Failed to parse JSON. Possibly HTML or captcha.")
+            print("❌ Failed to parse JSON — possibly a CAPTCHA page or an HTML error")
 
         await request_context.dispose()
         await browser.close()
 
 asyncio.run(main())
+
