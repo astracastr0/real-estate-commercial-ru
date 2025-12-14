@@ -104,7 +104,13 @@ def fetch_data_with_retries(json_data, url, max_attempts=5, initial_delay=5):
             response = session.post(url, json=json_data, timeout=30)
             if "text/html" in response.headers.get("Content-Type", ""):
                   print("Received HTML (captcha page). Skipping...")
-                  print("Response (first 300 chars):", response.text[:300])
+                  
+                  print("curl -X POST '{}' \\".format(url))
+                  print("-H 'Content-Type: application/json' \\")
+                  print("-H 'User-Agent: Mozilla/5.0' \\")
+                  print("-d '{}'".format(json.dumps(json_data)))
+
+                  print("Response (first 100 chars):", response.text[:100])
                   return None
 
             if response.status_code == 429:
