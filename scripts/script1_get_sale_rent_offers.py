@@ -84,33 +84,41 @@ districts_undergrounds_mapping = {
 # Create a session with requests to avoid repeated connections
 session = requests.Session()
 
+import requests
+import time
+import json
+
 def fetch_data_with_retries(json_data, url, max_attempts=5, initial_delay=5):
-    """Fetch data with exponential backoff for handling 429 errors."""
+    """Fetch data with retries and exponential backoff for 429 and network errors."""
     attempt = 0
     delay = initial_delay
+    session = requests.Session()
 
     while attempt < max_attempts:
         try:
+            print(f"Attempt {attempt + 1}: sending POST request to {url}")
             response = session.post(url, json=json_data, timeout=30)
-            response.raise_for_status()  # Raise an error for 4xx/5xx responses#
-            if response.status_code != 200:
-                  print(f"❌ HTTP {response.status_code} for request to {url}")
-                  print("Response text:", response.text)
-                  return {}
-              
+            response.raise_for_status()
+
             if not response.text.strip():
-                  print(f"❌ Empty response from {url} for request with data:\n{json_data}")
-                  return {}
-            return response.json()  # Successfully fetched data
+                print(f"Empty response from {url} on attempt {attempt + 1}")
+                print("Sent JSON (short):", json.dumps(json_data, ensure_ascii=False)[:300])
+                attempt += 1
+                time.sleep(delay)
+                delay *= 2
+                continue
+
+            return response.json()
 
         except requests.exceptions.HTTPError as e:
-            if response.status_code == 429:  # Too many requests
-                print(f"Received 429 error. Retrying in {delay} seconds...")
+            if response.status_code == 429:
+                print(f"Received HTTP 429 (Too Many Requests). Retrying in {delay} seconds...")
                 time.sleep(delay)
-                delay *= 2  # Double the delay for exponential backoff
+                delay *= 2
                 attempt += 1
             else:
-                raise  # Other HTTP errors should be raised immediately
+                print(f"HTTP error {response.status_code}: {e}")
+                return None
 
         except requests.exceptions.RequestException as e:
             print(f"Network error: {e}. Retrying in {delay} seconds...")
@@ -118,8 +126,9 @@ def fetch_data_with_retries(json_data, url, max_attempts=5, initial_delay=5):
             delay *= 2
             attempt += 1
 
-    print(f"Max retries reached. Skipping request for {json_data}")
-    return None  # Return None if all attempts fail
+    print("Max retries reached. Skipping request.")
+    return None
+
 
 def process_offers(input_parameter, offer_type, base_json_data, output_folder_sale, output_folder_rent):
     """Fetch data from Cian API and process it with retry logic."""
