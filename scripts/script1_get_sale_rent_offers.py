@@ -89,7 +89,6 @@ import time
 import json
 
 def fetch_data_with_retries(json_data, url, max_attempts=5, initial_delay=5):
-    """Fetch data with retries and exponential backoff for 429 and network errors."""
     attempt = 0
     delay = initial_delay
     session = requests.Session()
@@ -98,27 +97,37 @@ def fetch_data_with_retries(json_data, url, max_attempts=5, initial_delay=5):
         try:
             print(f"Attempt {attempt + 1}: sending POST request to {url}")
             response = session.post(url, json=json_data, timeout=30)
-            response.raise_for_status()
+
+            if response.status_code == 429:
+                print(f"HTTP 429 Too Many Requests. Retrying in {delay} seconds...")
+                time.sleep(delay)
+                delay *= 2
+                attempt += 1
+                continue
+
+            if response.status_code != 200:
+                print(f"HTTP error {response.status_code}")
+                print("Response text (first 500 chars):")
+                print(response.text[:500])
+                return None
 
             if not response.text.strip():
-                print(f"Empty response from {url} on attempt {attempt + 1}")
-                print("Sent JSON (short):", json.dumps(json_data, ensure_ascii=False)[:300])
+                print("Empty response body received")
                 attempt += 1
                 time.sleep(delay)
                 delay *= 2
                 continue
 
-            return response.json()
-
-        except requests.exceptions.HTTPError as e:
-            if response.status_code == 429:
-                print(f"Received HTTP 429 (Too Many Requests). Retrying in {delay} seconds...")
+            try:
+                return response.json()
+            except JSONDecodeError:
+                print("Response is not valid JSON")
+                print("Response text (first 500 chars):")
+                print(response.text[:500])
+                attempt += 1
                 time.sleep(delay)
                 delay *= 2
-                attempt += 1
-            else:
-                print(f"HTTP error {response.status_code}: {e}")
-                return None
+                continue
 
         except requests.exceptions.RequestException as e:
             print(f"Network error: {e}. Retrying in {delay} seconds...")
