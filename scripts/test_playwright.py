@@ -49,6 +49,7 @@ async def main():
             data=json.dumps(payload)  # <-- сериализуем вручную
         )
         print("Status:", response.status)
+        print("cookies:", cookie_str)
         text = await response.text()
         print("Text preview:", text[:500])
 
