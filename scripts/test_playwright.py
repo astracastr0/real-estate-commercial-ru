@@ -27,7 +27,10 @@ async def main():
                 "User-Agent": "Mozilla/5.0 ...",
                 "Accept-Language": "ru-RU",
                 "X-Requested-With": "XMLHttpRequest",
-                "Cookie": cookie_str
+                 "bh":"EkIiSGVhZGxlc3NDaHJvbWUiO3Y9IjE0MyIsICJDaHJvbWl1bSI7dj0iMTQzIiwgIk5vdCBBKEJyYW5kIjt2PSIyNCIqAj8wOgcibWFjT1MiYLzx/MkGaiHcytG2Abvxn6sE+taGzAjS0e3rA/y5r/8H3/2HuwXzgQI=",
+                "Cookie": cookie_str,
+                "bh":"EkIiSGVhZGxlc3NDaHJvbWUiO3Y9IjE0MyIsICJDaHJvbWl1bSI7dj0iMTQzIiwgIk5vdCBBKEJyYW5kIjt2PSIyNCIqAj8wOgcibWFjT1MiYLzx/MkGaiHcytG2Abvxn6sE+taGzAjS0e3rA/y5r/8H3/2HuwXzgQI=",
+                
             }
         )
 
