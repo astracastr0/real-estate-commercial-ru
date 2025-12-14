@@ -90,13 +90,13 @@ headers = {
 }
 
 session = requests.Session()
-session.headers.update(headers)
 
 
 def fetch_data_with_retries(json_data, url, max_attempts=5, initial_delay=5):
     attempt = 0
     delay = initial_delay
     session = requests.Session()
+    session.headers.update(headers)
 
     while attempt < max_attempts:
         try:
