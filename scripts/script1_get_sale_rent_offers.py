@@ -2,6 +2,7 @@ import argparse
 import os
 import requests
 import json
+from json import JSONDecodeError
 import time
 
 # Define the mappings for districts and undergrounds
@@ -84,9 +85,6 @@ districts_undergrounds_mapping = {
 # Create a session with requests to avoid repeated connections
 session = requests.Session()
 
-import requests
-import time
-import json
 
 def fetch_data_with_retries(json_data, url, max_attempts=5, initial_delay=5):
     attempt = 0
