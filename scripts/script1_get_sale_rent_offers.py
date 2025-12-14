@@ -92,7 +92,15 @@ def fetch_data_with_retries(json_data, url, max_attempts=5, initial_delay=5):
     while attempt < max_attempts:
         try:
             response = session.post(url, json=json_data, timeout=30)
-            response.raise_for_status()  # Raise an error for 4xx/5xx responses
+            response.raise_for_status()  # Raise an error for 4xx/5xx responses#
+            if response.status_code != 200:
+                  print(f"❌ HTTP {response.status_code} for request to {url}")
+                  print("Response text:", response.text)
+                  return {}
+              
+            if not response.text.strip():
+                  print(f"❌ Empty response from {url} for request with data:\n{json_data}")
+                  return {}
             return response.json()  # Successfully fetched data
 
         except requests.exceptions.HTTPError as e:
