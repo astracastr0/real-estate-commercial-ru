@@ -47,6 +47,6 @@ def main(area, api_key):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Fetch, process, and combine real estate offers.')
     parser.add_argument('area', type=str, help='Area parameter (e.g., NAO, UAO, ZAO)')
-    parser.add_argument('--api_key', type=str, required=True, help='Google API key for fetching nearby store information')
+    parser.add_argument('--api_key', type=str, required=False, help='Google API key for fetching nearby store information')
     args = parser.parse_args()
     main(args.area, args.api_key)
