@@ -83,7 +83,14 @@ districts_undergrounds_mapping = {
         # Add more mappings as needed
     }
 # Create a session with requests to avoid repeated connections
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "application/json, text/plain, */*",
+    "Referer": "https://www.cian.ru/"
+}
+
 session = requests.Session()
+session.headers.update(headers)
 
 
 def fetch_data_with_retries(json_data, url, max_attempts=5, initial_delay=5):
