@@ -2,6 +2,9 @@ import asyncio
 import json
 from playwright.async_api import async_playwright
 
+OUTPUT_FILE = "cian_response.json"
+CAPTCHA_FILE = "cian_response.html"
+
 STATIC_BH = "EkIiSGVhZGxlc3NDaHJvbWUiO3Y9IjE0MyIsICJDaHJvbWl1bSI7dj0iMTQzIiwgIk5vdCBBKEJyYW5kIjt2PSIyNCIqAj8wOgcibWFjT1MiYLzx/MkGaiHcytG2Abvxn6sE+taGzAjS0e3rA/y5r/8H3/2HuwXzgQI="
 
 async def main():
@@ -9,7 +12,7 @@ async def main():
         browser = await p.chromium.launch(headless=True)
         context = await browser.new_context()
 
-        # ⬇️ Устанавливаем bh cookie вручную до загрузки страницы
+        # Устанавливаем bh cookie вручную до захода на сайт
         await context.add_cookies([{
             'name': 'bh',
             'value': STATIC_BH,
@@ -21,16 +24,12 @@ async def main():
         }])
 
         page = await context.new_page()
-
-        # ⬇️ Заход на сайт, чтобы получить другие cookies (например _CIAN_GK)
         await page.goto("https://www.cian.ru/")
         await page.wait_for_timeout(3000)
 
-        # ⬇️ Собираем все cookies
         cookies = await context.cookies()
         cookie_str = "; ".join(f"{c['name']}={c['value']}" for c in cookies)
 
-        # ⬇️ Создаём отдельный request context
         request_context = await p.request.new_context(
             base_url="https://api.cian.ru",
             extra_http_headers={
@@ -40,7 +39,7 @@ async def main():
                 "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
                 "Accept-Language": "ru-RU",
                 "X-Requested-With": "XMLHttpRequest",
-                "Cookie": cookie_str  # ⬅️ используем актуальную строку cookie
+                "Cookie": cookie_str
             }
         )
 
@@ -63,18 +62,20 @@ async def main():
         )
 
         print("Status:", response.status)
-        print("Cookies used:", cookie_str)
         text = await response.text()
-        print("Text preview:", text[:500])
 
         try:
             data = json.loads(text)
-            print("✅ Response JSON parsed successfully")
+            with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            print(f"✅ Response saved to {OUTPUT_FILE}")
         except json.JSONDecodeError:
-            print("❌ Failed to parse JSON — possibly a CAPTCHA page or an HTML error")
+            # Сохраняем HTML в файл для анализа капчи
+            with open(CAPTCHA_FILE, "w", encoding="utf-8") as f:
+                f.write(text)
+            print(f"❌ Failed to parse JSON — saved HTML to {CAPTCHA_FILE}")
 
         await request_context.dispose()
         await browser.close()
 
 asyncio.run(main())
-
