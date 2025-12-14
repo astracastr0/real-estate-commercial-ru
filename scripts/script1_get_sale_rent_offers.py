@@ -102,6 +102,10 @@ def fetch_data_with_retries(json_data, url, max_attempts=5, initial_delay=5):
         try:
             print(f"Attempt {attempt + 1}: sending POST request to {url}")
             response = session.post(url, json=json_data, timeout=30)
+            if "text/html" in response.headers.get("Content-Type", ""):
+                  print("Received HTML (captcha page). Skipping...")
+                  print("Response (first 300 chars):", response.text[:300])
+                  return None
 
             if response.status_code == 429:
                 print(f"HTTP 429 Too Many Requests. Retrying in {delay} seconds...")
