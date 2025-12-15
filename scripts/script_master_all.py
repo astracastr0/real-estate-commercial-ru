@@ -9,7 +9,7 @@ from script5_send_to_bitrix import send_to_bitrix_from_csv
 from script6_send_to_telegram import send_to_telegram_from_df
 
 # Configs
-areas = ['NAO', 'CAO', 'VAO', 'ZAO', 'SAO', 'SZAO', 'SVAO', 'UVAO', 'UAO', 'UZAO', 'ZelAO']
+areas = ['NAO', 'CAO', 'VAO', 'ZAO', 'SAO', 'SZAO', 'SVAO', 'UVAO', 'UAO', 'UZAO', 'ZelAO','NAO', 'CAO', 'VAO', 'ZAO', 'SAO', 'SZAO']
 
 api_key = 'AIzaSyD3uB5Syh7E-tW0a9qLu2EHJ1MqHxqyUu8'
 script_master_path = 'scripts/script_master.py'
