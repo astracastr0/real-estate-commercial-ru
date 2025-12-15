@@ -15,6 +15,10 @@ api_key = 'AIzaSyD3uB5Syh7E-tW0a9qLu2EHJ1MqHxqyUu8'
 script_master_path = 'scripts/script_master.py'
 output_directory = 'output'
 output_directory_csv = f'{output_directory}/CSV'
+TELEGRAM_BOT_TOKEN = '8474295044:AAF8vIpC-d9jcaPytpszmFQuVY9jHJza8Oc'
+TELEGRAM_CHAT_ID = '-5007976823'
+
+
 to_email = "fedora121@gmail.com, deminr@ya.ru, julia@dove.rent, oleg@dove.rent, maksim@dove.rent, slava@dove.rent"
 
 
