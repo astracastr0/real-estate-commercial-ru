@@ -6,6 +6,7 @@ import time
 import logging
 import sys
 from script5_send_to_bitrix import send_to_bitrix_from_csv
+from script6_send_to_telegram import send_to_telegram_from_csv
 
 # Configs
 areas = ['NAO', 'CAO', 'VAO', 'ZAO', 'SAO', 'SZAO', 'SVAO', 'UVAO', 'UAO', 'UZAO', 'ZelAO']
@@ -307,9 +308,6 @@ if __name__ == "__main__":
 
     if run_parts["delta"] and combined_df is not None:
         new_file_path = filter_unique_new_ids(combined_df, output_directory_csv)
-
-    if run_parts["send"] and new_file_path:
-        send_email_with_file(new_file_path, to_email)
 
     if run_parts["bitrix"] and new_file_path:
         csv_path = new_file_path.replace(".xlsx", ".csv")
