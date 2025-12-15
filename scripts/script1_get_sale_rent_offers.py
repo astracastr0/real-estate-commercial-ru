@@ -30,16 +30,81 @@ HEADERS_BASE = {
 # =========================
 
 districts_undergrounds_mapping = {
-    "NAO": {
-        "districts": [325, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337],
-        "undergrounds": [],
-    },
+       "NAO": {
+            "districts": [325,327,328, 329,330, 331,332, 333, 334, 335,336,337],
+            "undergrounds": [23,25,136,138,284,285,364,365,366,367,377,378,380],
+            "output_folder_sale": "json_files_sale_NAO",
+            "output_folder_rent": "json_files_rent_NAO"
+
+        },
     "CAO": {
-        "districts": [4, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
-        "undergrounds": [],
-    },
-    # остальные округа без изменений
-}
+            "districts": [4,13,14,15,16,17,18,19,20,21,22],
+            "undergrounds": [8 ,12,13,15 ,20 ,38 ,46 ,47 ,50  ,53 ,54 ,55 ,56 ,58 ,61 ,64  ,68 ,70 ,71 ,77 ,78 ,80 ,84  ,85 ,86 ,95 ,96 ,98 ,101 ,103    ,105    ,107    ,108    ,110    ,114    ,115    ,117    ,118    ,119    ,121 ,123    ,124    ,125    ,129    ,130    ,132    ,134    ,143 ,145    ,148    ,149    ,150    ,151    ,155    ,159    ,236 ,237    ,272    ,310    ,311    ,384    ,386    ,400    ,425    ,426    ,441    ,470    ,520    ,],
+            "output_folder_sale": "json_files_sale_CAO",
+            "output_folder_rent": "json_files_rent_CAO"
+        },
+     "VAO": {
+            "districts": [7,70,56,57,59,60,61,62,63,64,65,67,68,69,70,71],
+            "undergrounds": [],
+            "output_folder_sale": "json_files_sale_VAO",
+            "output_folder_rent": "json_files_rent_VAO"
+        },
+    "ZAO": {
+            "districts": [11,112,113,114,115,116,117,118,119,120,121,122,123,124,348,349,350],
+            "undergrounds": [],
+            "output_folder_sale": "json_files_sale_ZAO",
+            "output_folder_rent": "json_files_rent_ZAO"
+        },
+    "SAO": {
+            "districts": [5,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38],
+            "undergrounds": [],
+            "output_folder_sale": "json_files_sale_SAO",
+            "output_folder_rent": "json_files_rent_SAO"
+        },
+    "SZAO": {
+            "districts": [125,126,127,128,129,130,131,132],
+            "undergrounds": [],
+            "output_folder_sale": "json_files_sale_SZAO",
+            "output_folder_rent": "json_files_rent_SZAO"
+        },
+    "SVAO": {
+            "districts": [6,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55],
+            "undergrounds": [],
+            "output_folder_sale": "json_files_sale_SVAO",
+            "output_folder_rent": "json_files_rent_SVAO"
+        },
+    "UVAO": {
+            "districts": [8,72,73,74,75,76,77,78,79,80,81,82,83],
+            "undergrounds": [],
+            "output_folder_sale": "json_files_sale_UVAO",
+            "output_folder_rent": "json_files_rent_UVAO"
+        },
+    "UAO": {
+            "districts": [9,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99],
+            "undergrounds": [],
+            "output_folder_sale": "json_files_sale_UAO",
+            "output_folder_rent": "json_files_rent_UAO"
+        },
+    "UZAO": {
+            "districts": [10,100,101,102,103,104,105,106,107,108,109,110,111],
+            "undergrounds": [],
+            "output_folder_sale": "json_files_sale_UZAO",
+            "output_folder_rent": "json_files_rent_UZAO"
+        },
+    "ZelAO": {
+            "districts": [151,152,153,154,355,356,357,358],
+            "undergrounds": [],
+            "output_folder_sale": "json_files_sale_ZelAO",
+            "output_folder_rent": "json_files_rent_ZelAO"
+        },
+    "TAO": {
+            "districts": [326,338,339,340,341,342,343,344,345,346,347],
+            "undergrounds": [],
+            "output_folder_sale": "json_files_sale_TAO",
+            "output_folder_rent": "json_files_rent_TAO"
+        },
+        # Add more mappings as needed
+    }
 
 # =========================
 # PLAYWRIGHT CORE
