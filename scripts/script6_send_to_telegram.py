@@ -17,7 +17,7 @@ def send_message(text, parse_mode="HTML"):
     requests.post(url, data=payload)
 
 
-def send_listings_from_csv(csv_path):
+def send_to_telegram_from_csv(csv_path):
     df = pd.read_csv(csv_path)
     if df.empty:
         return
