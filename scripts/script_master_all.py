@@ -6,7 +6,7 @@ import time
 import logging
 import sys
 from script5_send_to_bitrix import send_to_bitrix_from_csv
-from script6_send_to_telegram import send_to_telegram_from_csv
+from script6_send_to_telegram import send_to_telegram_from_df
 
 # Configs
 areas = ['NAO', 'CAO', 'VAO', 'ZAO', 'SAO', 'SZAO', 'SVAO', 'UVAO', 'UAO', 'UZAO', 'ZelAO']
