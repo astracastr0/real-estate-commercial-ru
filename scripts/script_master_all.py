@@ -315,9 +315,15 @@ if __name__ == "__main__":
         try:
             df = pd.read_excel(new_file_path)
             df.to_csv(csv_path, index=False)
-            send_to_bitrix_from_csv(csv_path)
+            df = send_to_bitrix_from_csv(csv_path)
+            if df is not None and not df.empty:
+                bitrix_ids = {str(row["id"]): row["bitrix_id"] for _, row in df.iterrows() if pd.notna(row.get("bitrix_id"))}
+
             logging.info(f"Finish to load into Bitrix")
+            send_to_telegram_from_df(df, bitrix_ids, telegram_token, chat_id)
         except Exception as e:
             logging.error(f"Ошибка при загрузке в Bitrix: {e}")
+            
+    
 
 
