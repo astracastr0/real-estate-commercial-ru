@@ -83,6 +83,7 @@ def send_to_bitrix_from_csv(csv_path):
                 "categoryId": 27,
                 "title": title,
                 "xmlId": str(row["id"]),
+                "XML_ID": str(row["id"]),
                 "currencyId": "RUB",
                 "opportunity": price,
                 "ufCrm9_1733219023950": city_id,
