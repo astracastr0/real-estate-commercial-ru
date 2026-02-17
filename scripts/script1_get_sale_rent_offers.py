@@ -12,7 +12,7 @@ from json import JSONDecodeError
 
 API_URL = "https://api.cian.ru/commercial-search-offers/desktop/v1/offers/get-offers/"
 
-STATIC_BH = "EkIiSGVhZGxlc3NDaHJvbWUiO3Y9IjE0MyIsICJDaHJvbWl1bSI7dj0iMTQzIiwgIk5vdCBBKEJyYW5kIjt2PSIyNCIqAj8wOgcibWFjT1MiYLzx/MkGaiHcytG2Abvxn6sE+taGzAjS0e3rA/y5r/8H3/2HuwXzgQI="
+STATIC_BH = "EkAiTm90KEE6QnJhbmQiO3Y9IjgiLCAiQ2hyb21pdW0iO3Y9IjE0NCIsICJHb29nbGUgQ2hyb21lIjt2PSIxNDQiGgNhcm0iDjE0NC4wLjc1NTkuMTEwKgI/MDoHIm1hY09TIkIGMTMuNC4wSgI2NFJaIk5vdChBOkJyYW5kIjt2PSI4LjAuMC4wIiwiQ2hyb21pdW0iO3Y9IjE0NC4wLjc1NTkuMTEwIiwiR29vZ2xlIENocm9tZSI7dj0iMTQ0LjAuNzU1OS4xMTAiYLeQ08wGaiHcytG2Abvxn6sE+taGzAjS0e3rA/y5r/8H3/373AfzgQI="
 
 HEADERS_BASE = {
     "Content-Type": "application/json",
@@ -20,7 +20,10 @@ HEADERS_BASE = {
     "Referer": "https://www.cian.ru/",
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                   "AppleWebKit/537.36 (KHTML, like Gecko) "
-                  "Chrome/138.0.0.0 Safari/537.36",
+                  "Chrome/144.0.0.0 Safari/537.36",
+    "sec-ch-ua": '"Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"',
+    "sec-ch-ua-platform": '"macOS"',
+    "sec-ch-ua-mobile": "?0",
     "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8",
     "X-Requested-With": "XMLHttpRequest",
 }
