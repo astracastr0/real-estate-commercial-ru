@@ -12,6 +12,7 @@ from script6_send_to_telegram import send_to_telegram_from_df
 areas = ['NAO', 'CAO', 'VAO', 'ZAO', 'SAO', 'SZAO', 'SVAO', 'UVAO', 'UAO', 'UZAO', 'ZelAO']
 
 api_key = 'AIzaSyD3uB5Syh7E-tW0a9qLu2EHJ1MqHxqyUu8'
+proxy = 'http://89.208.85.78:443'
 script_master_path = 'scripts/script_master.py'
 output_directory = 'output'
 output_directory_csv = f'{output_directory}/CSV'
@@ -41,12 +42,14 @@ logging.basicConfig(
     )
 
 
-def run_for_all_areas(areas, api_key, script_master_path):
+def run_for_all_areas(areas, api_key, script_master_path, proxy=None):
     logging.info("Running scripts for all areas")
-    total_start_time = time.time() 
+    total_start_time = time.time()
 
     for area in areas:
         command = f'{sys.executable} {script_master_path} {area} --api_key {api_key}'
+        if proxy:
+            command += f' --proxy {proxy}'
         
         start_time = time.time()  # Start time for the current region
         logging.info(f"Running script for region: {area}")
@@ -66,7 +69,7 @@ def run_for_all_areas(areas, api_key, script_master_path):
     logging.info(f"Areas parsing completed in {total_execution_time} min")
 
 
-def run_script_master_for_areas(areas, api_key, script_master_path, output_directory_csv):
+def run_script_master_for_areas(areas, api_key, script_master_path, output_directory_csv, proxy=None):
     combined_df = pd.DataFrame()
     
     # Ensure output directory exists
@@ -86,6 +89,8 @@ def run_script_master_for_areas(areas, api_key, script_master_path, output_direc
         # Construct and run the command for script_master.py
         absolute_script_path = os.path.abspath(script_master_path)
         command = f'python3 {absolute_script_path} {area} --api_key {api_key}'
+        if proxy:
+            command += f' --proxy {proxy}'
         logging.info(f"Running script for region: {area}")
         
         try:
@@ -296,7 +301,7 @@ if __name__ == "__main__":
     combined_df, new_file_path = None, None
 
     if run_parts["run_areas"]:
-        run_for_all_areas(areas, api_key, script_master_path)
+        run_for_all_areas(areas, api_key, script_master_path, proxy)
 
     if run_parts["combine"]:
         combined_df, _ = combine_csvs(areas, output_directory_csv)
