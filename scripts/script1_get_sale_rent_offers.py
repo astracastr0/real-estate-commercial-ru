@@ -137,14 +137,17 @@ districts_undergrounds_mapping = {
 # PLAYWRIGHT CORE
 # =========================
 
-async def _make_request_context(playwright, cookie_str):
+async def _make_request_context(playwright, cookie_str, proxy=None):
     """Create a request context with given cookies."""
-    return await playwright.request.new_context(
-        extra_http_headers={
+    kwargs = {
+        "extra_http_headers": {
             **HEADERS_BASE,
             "Cookie": cookie_str
         }
-    )
+    }
+    if proxy:
+        kwargs["proxy"] = {"server": proxy}
+    return await playwright.request.new_context(**kwargs)
 
 
 async def _test_api(request_context):
@@ -165,10 +168,15 @@ async def _test_api(request_context):
     return False
 
 
-async def init_request_context(playwright):
+async def init_request_context(playwright, proxy=None):
+    proxy_label = f" (via proxy {proxy})" if proxy else ""
+
     # План А: заходим на сайт, чтобы получить валидные cookies
-    print("Plan A: visiting cian.ru to get fresh cookies...")
-    browser = await playwright.chromium.launch(headless=True)
+    print(f"Plan A: visiting cian.ru to get fresh cookies{proxy_label}...")
+    launch_opts = {"headless": True}
+    if proxy:
+        launch_opts["proxy"] = {"server": proxy}
+    browser = await playwright.chromium.launch(**launch_opts)
     context = await browser.new_context()
 
     await context.add_cookies([{
@@ -190,7 +198,7 @@ async def init_request_context(playwright):
     await browser.close()
 
     # Тестируем Plan A cookies реальным API запросом
-    rc = await _make_request_context(playwright, cookie_str)
+    rc = await _make_request_context(playwright, cookie_str, proxy)
     if await _test_api(rc):
         print(f"Plan A success: got {len(cookies)} valid cookies from browser.")
         return None, rc
@@ -200,14 +208,14 @@ async def init_request_context(playwright):
 
     # План Б: используем захардкоженные cookies
     cookie_str = "; ".join(f"{k}={v}" for k, v in FALLBACK_COOKIES.items())
-    rc = await _make_request_context(playwright, cookie_str)
+    rc = await _make_request_context(playwright, cookie_str, proxy)
     if await _test_api(rc):
         print("Plan B success: static cookies work.")
         return None, rc
 
     await rc.dispose()
     print("Plan B also failed. Proceeding with static cookies anyway...")
-    rc = await _make_request_context(playwright, cookie_str)
+    rc = await _make_request_context(playwright, cookie_str, proxy)
     return None, rc
 
 
@@ -240,12 +248,12 @@ async def fetch_json(request_context, payload, retries=3, delay=5):
 # BUSINESS LOGIC
 # =========================
 
-async def process_offers(area, offer_type, base_payload, output_dir):
+async def process_offers(area, offer_type, base_payload, output_dir, proxy=None):
     config = districts_undergrounds_mapping[area]
     os.makedirs(output_dir, exist_ok=True)
 
     async with async_playwright() as p:
-        browser, request_context = await init_request_context(p)
+        browser, request_context = await init_request_context(p, proxy)
 
         for district in config["districts"]:
             print(f"Fetching {offer_type} offers for district {district}")
@@ -274,7 +282,7 @@ async def process_offers(area, offer_type, base_payload, output_dir):
 # ENTRYPOINT
 # =========================
 
-def main(area, sale_output_dir, rent_output_dir):
+def main(area, sale_output_dir, rent_output_dir, proxy=None):
     sale_payload = {
         "jsonQuery": {
             "_type": "commercialsale",
@@ -299,8 +307,8 @@ def main(area, sale_output_dir, rent_output_dir):
         }
     }
 
-    asyncio.run(process_offers(area, "sale", sale_payload, sale_output_dir))
-    asyncio.run(process_offers(area, "rent", rent_payload, rent_output_dir))
+    asyncio.run(process_offers(area, "sale", sale_payload, sale_output_dir, proxy))
+    asyncio.run(process_offers(area, "rent", rent_payload, rent_output_dir, proxy))
 
 
 if __name__ == "__main__":
@@ -308,6 +316,7 @@ if __name__ == "__main__":
     parser.add_argument("area")
     parser.add_argument("--sale_output_dir", required=True)
     parser.add_argument("--rent_output_dir", required=True)
+    parser.add_argument("--proxy", type=str, default=None, help="HTTP proxy, e.g. http://1.2.3.4:8080")
     args = parser.parse_args()
 
-    main(args.area, args.sale_output_dir, args.rent_output_dir)
+    main(args.area, args.sale_output_dir, args.rent_output_dir, args.proxy)

@@ -12,7 +12,7 @@ from script2_sale_readjs import process_sale_jsons as process_sale
 from script3_cian_join_sale_rent import join_sale_rent
 from script4_google_nearby_cat import enrich_dataset
 
-def main(area, api_key):
+def main(area, api_key, proxy=None):
     # Get the current date in YYMMDD format
     current_date = datetime.datetime.now().strftime("%y%m%d")
 
@@ -32,7 +32,7 @@ def main(area, api_key):
     os.makedirs(output_dir, exist_ok=True)
 
     # Step 1: Fetch sale and rent offers (now passing the output directories)
-    fetch_offers(area, sale_json_dir, rent_json_dir)  # Updated function call
+    fetch_offers(area, sale_json_dir, rent_json_dir, proxy)
 
     # Step 2: Process sale and rent offers (script 2 will now use the correct JSON input directories)
     process_sale(sale_json_dir, sale_output_csv)
@@ -48,5 +48,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Fetch, process, and combine real estate offers.')
     parser.add_argument('area', type=str, help='Area parameter (e.g., NAO, UAO, ZAO)')
     parser.add_argument('--api_key', type=str, required=False, help='Google API key for fetching nearby store information')
+    parser.add_argument('--proxy', type=str, default=None, help='HTTP proxy, e.g. http://1.2.3.4:8080')
     args = parser.parse_args()
-    main(args.area, args.api_key)
+    main(args.area, args.api_key, args.proxy)
