@@ -137,11 +137,40 @@ districts_undergrounds_mapping = {
 # PLAYWRIGHT CORE
 # =========================
 
+async def _make_request_context(playwright, cookie_str):
+    """Create a request context with given cookies."""
+    return await playwright.request.new_context(
+        extra_http_headers={
+            **HEADERS_BASE,
+            "Cookie": cookie_str
+        }
+    )
+
+
+async def _test_api(request_context):
+    """Make a test API call to check if cookies are valid. Returns True if OK."""
+    test_payload = {
+        "jsonQuery": {
+            "_type": "commercialsale",
+            "engine_version": {"type": "term", "value": 2},
+            "office_type": {"type": "terms", "value": [2]},
+            "region": {"type": "terms", "value": [1]},
+            "geo": {"type": "geo", "value": [{"id": 9, "type": "district"}]}
+        }
+    }
+    response = await request_context.post(API_URL, data=json.dumps(test_payload))
+    text = await response.text()
+    if response.status == 200 and not text.startswith("<"):
+        return True
+    return False
+
+
 async def init_request_context(playwright):
+    # План А: заходим на сайт, чтобы получить валидные cookies
+    print("Plan A: visiting cian.ru to get fresh cookies...")
     browser = await playwright.chromium.launch(headless=True)
     context = await browser.new_context()
 
-    # 1. Жёстко ставим bh
     await context.add_cookies([{
         "name": "bh",
         "value": STATIC_BH,
@@ -153,33 +182,33 @@ async def init_request_context(playwright):
     }])
 
     page = await context.new_page()
-
-    # 2. План А: заходим на сайт, чтобы получить валидные cookies
-    print("Plan A: visiting cian.ru to get fresh cookies...")
     await page.goto("https://www.cian.ru/")
     await page.wait_for_timeout(4000)
 
-    content = await page.content()
     cookies = await context.cookies()
     cookie_str = "; ".join(f"{c['name']}={c['value']}" for c in cookies)
-
-    # 3. Проверяем — если страница вернула капчу, переключаемся на План Б
-    if "<captcha" in content.lower() or len(cookies) < 5:
-        print("Plan A failed (captcha detected). Switching to Plan B: static cookies...")
-        cookie_str = "; ".join(f"{k}={v}" for k, v in FALLBACK_COOKIES.items())
-    else:
-        print(f"Plan A success: got {len(cookies)} cookies from browser.")
-
     await browser.close()
 
-    request_context = await playwright.request.new_context(
-        extra_http_headers={
-            **HEADERS_BASE,
-            "Cookie": cookie_str
-        }
-    )
+    # Тестируем Plan A cookies реальным API запросом
+    rc = await _make_request_context(playwright, cookie_str)
+    if await _test_api(rc):
+        print(f"Plan A success: got {len(cookies)} valid cookies from browser.")
+        return None, rc
 
-    return None, request_context
+    await rc.dispose()
+    print("Plan A failed (API returned captcha). Switching to Plan B: static cookies...")
+
+    # План Б: используем захардкоженные cookies
+    cookie_str = "; ".join(f"{k}={v}" for k, v in FALLBACK_COOKIES.items())
+    rc = await _make_request_context(playwright, cookie_str)
+    if await _test_api(rc):
+        print("Plan B success: static cookies work.")
+        return None, rc
+
+    await rc.dispose()
+    print("Plan B also failed. Proceeding with static cookies anyway...")
+    rc = await _make_request_context(playwright, cookie_str)
+    return None, rc
 
 
 async def fetch_json(request_context, payload, retries=3, delay=5):
