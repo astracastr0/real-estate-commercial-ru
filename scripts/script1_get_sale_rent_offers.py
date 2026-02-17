@@ -14,6 +14,30 @@ API_URL = "https://api.cian.ru/commercial-search-offers/desktop/v1/offers/get-of
 
 STATIC_BH = "EkAiTm90KEE6QnJhbmQiO3Y9IjgiLCAiQ2hyb21pdW0iO3Y9IjE0NCIsICJHb29nbGUgQ2hyb21lIjt2PSIxNDQiGgNhcm0iDjE0NC4wLjc1NTkuMTEwKgI/MDoHIm1hY09TIkIGMTMuNC4wSgI2NFJaIk5vdChBOkJyYW5kIjt2PSI4LjAuMC4wIiwiQ2hyb21pdW0iO3Y9IjE0NC4wLjc1NTkuMTEwIiwiR29vZ2xlIENocm9tZSI7dj0iMTQ0LjAuNzU1OS4xMTAiYLeQ08wGaiHcytG2Abvxn6sE+taGzAjS0e3rA/y5r/8H3/373AfzgQI="
 
+# Plan B: fallback cookies from a real browser session (.cian.ru + www.cian.ru)
+FALLBACK_COOKIES = {
+    "bh": STATIC_BH,
+    "tmr_lvidTS": "1771358263726",
+    "tmr_lvid": "9e31abe95e274e6185822dd56403ee5d",
+    "sopr_utm": "%7B%22utm_source%22%3A+%22direct%22%2C+%22utm_medium%22%3A+%22None%22%7D",
+    "sopr_session": "e9e40eee326e4524",
+    "session_region_id": "1",
+    "session_main_town_region_id": "1",
+    "login_mro_popup": "1",
+    "cookie_agreement_accepted": "1",
+    "_ym_visorc": "b",
+    "_ym_uid": "1771358267448125848",
+    "_ym_isad": "2",
+    "_ym_d": "1771358267",
+    "_yasc": "9kvgimsiSrcWgD+vwonG2zfBAgOvpoAVIkdtenSMuHkaeBbHBHKgSA10DkMBOaqe",
+    "_gcl_au": "1.1.1120949663.1771358263",
+    "_ga_3369S417EL": "GS2.1.s1771358266$o1$g1$t1771358296$j30$l0$h0",
+    "_ga": "GA1.1.398076801.1771358267",
+    "tmr_detect": "0%7C1771358297436",
+    "domain_sid": "wJoTWOCpFT57G98EToGxH%3A1771358265300",
+    "_spx": "eyJpZCI6IjkyNzc2MzhjLTYzZjktNDVjYS1iNGIzLWVjZTc2ODVlZDBjMyIsInNvdXJjZSI6IiIsImZpeGVkIjp7InN0YWNrIjpbMCw2MTIwMTAzOTRdfX0%3D",
+}
+
 HEADERS_BASE = {
     "Content-Type": "application/json",
     "Origin": "https://www.cian.ru",
@@ -130,12 +154,23 @@ async def init_request_context(playwright):
 
     page = await context.new_page()
 
-    # 2. Заходим на сайт, чтобы получить валидные cookies
+    # 2. План А: заходим на сайт, чтобы получить валидные cookies
+    print("Plan A: visiting cian.ru to get fresh cookies...")
     await page.goto("https://www.cian.ru/")
     await page.wait_for_timeout(4000)
 
+    content = await page.content()
     cookies = await context.cookies()
     cookie_str = "; ".join(f"{c['name']}={c['value']}" for c in cookies)
+
+    # 3. Проверяем — если страница вернула капчу, переключаемся на План Б
+    if "<captcha" in content.lower() or len(cookies) < 5:
+        print("Plan A failed (captcha detected). Switching to Plan B: static cookies...")
+        cookie_str = "; ".join(f"{k}={v}" for k, v in FALLBACK_COOKIES.items())
+    else:
+        print(f"Plan A success: got {len(cookies)} cookies from browser.")
+
+    await browser.close()
 
     request_context = await playwright.request.new_context(
         extra_http_headers={
@@ -144,7 +179,7 @@ async def init_request_context(playwright):
         }
     )
 
-    return browser, request_context
+    return None, request_context
 
 
 async def fetch_json(request_context, payload, retries=3, delay=5):
@@ -203,7 +238,8 @@ async def process_offers(area, offer_type, base_payload, output_dir):
             await asyncio.sleep(5)
 
         await request_context.dispose()
-        await browser.close()
+        if browser:
+            await browser.close()
 
 # =========================
 # ENTRYPOINT
