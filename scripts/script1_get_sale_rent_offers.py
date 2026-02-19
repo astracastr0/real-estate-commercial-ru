@@ -2,6 +2,7 @@ import argparse
 import os
 import json
 import time
+import random
 import asyncio
 from playwright.async_api import async_playwright
 from json import JSONDecodeError
@@ -168,16 +169,65 @@ async def _test_api(request_context):
     return False
 
 
-async def init_request_context(playwright, proxy=None):
-    proxy_label = f" (via proxy {proxy})" if proxy else ""
+STEALTH_JS = """
+// Hide navigator.webdriver
+Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
 
-    # План А: заходим на сайт, чтобы получить валидные cookies
-    print(f"Plan A: visiting cian.ru to get fresh cookies{proxy_label}...")
-    launch_opts = {"headless": True}
+// Mock navigator.plugins
+Object.defineProperty(navigator, 'plugins', {
+    get: () => [
+        { name: 'Chrome PDF Plugin', filename: 'internal-pdf-viewer', description: 'Portable Document Format' },
+        { name: 'Chrome PDF Viewer', filename: 'mhjfbmdgcfjbbpaeojofohoefgiehjai', description: '' },
+        { name: 'Native Client', filename: 'internal-nacl-plugin', description: '' },
+    ],
+});
+
+// Mock navigator.languages
+Object.defineProperty(navigator, 'languages', { get: () => ['ru-RU', 'ru', 'en-US', 'en'] });
+
+// Mock chrome.runtime
+window.chrome = { runtime: {} };
+
+// Patch permissions.query
+const origQuery = window.navigator.permissions.query;
+window.navigator.permissions.query = (params) =>
+    params.name === 'notifications'
+        ? Promise.resolve({ state: Notification.permission })
+        : origQuery(params);
+
+// Override WebGL vendor/renderer
+const getParameter = WebGLRenderingContext.prototype.getParameter;
+WebGLRenderingContext.prototype.getParameter = function(param) {
+    if (param === 37445) return 'Intel Inc.';
+    if (param === 37446) return 'Intel Iris OpenGL Engine';
+    return getParameter.call(this, param);
+};
+"""
+
+STEALTH_ARGS = [
+    "--disable-blink-features=AutomationControlled",
+    "--no-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-infobars",
+    "--window-size=1920,1080",
+]
+
+
+async def _visit_cian_stealth(playwright, proxy=None):
+    """Launch a stealth browser, visit cian.ru with human-like behavior, return cookie string."""
+    launch_opts = {"headless": True, "args": STEALTH_ARGS}
     if proxy:
         launch_opts["proxy"] = {"server": proxy}
+
     browser = await playwright.chromium.launch(**launch_opts)
-    context = await browser.new_context()
+    context = await browser.new_context(
+        viewport={"width": 1920, "height": 1080},
+        locale="ru-RU",
+        timezone_id="Europe/Moscow",
+        user_agent=HEADERS_BASE["User-Agent"],
+    )
+
+    await context.add_init_script(STEALTH_JS)
 
     await context.add_cookies([{
         "name": "bh",
@@ -190,21 +240,50 @@ async def init_request_context(playwright, proxy=None):
     }])
 
     page = await context.new_page()
-    await page.goto("https://www.cian.ru/")
-    await page.wait_for_timeout(4000)
+    await page.goto("https://www.cian.ru/", wait_until="domcontentloaded")
+
+    # Human-like behavior: scroll and move mouse
+    await page.wait_for_timeout(random.randint(1500, 3000))
+    await page.mouse.move(random.randint(100, 800), random.randint(200, 600))
+    await page.evaluate("window.scrollBy(0, %d)" % random.randint(300, 700))
+    await page.wait_for_timeout(random.randint(1000, 2000))
+    await page.evaluate("window.scrollBy(0, %d)" % random.randint(-200, -50))
+    await page.mouse.move(random.randint(400, 1200), random.randint(100, 500))
+
+    # Wait 5-8 seconds total for cookies to settle
+    await page.wait_for_timeout(random.randint(5000, 8000))
 
     cookies = await context.cookies()
     cookie_str = "; ".join(f"{c['name']}={c['value']}" for c in cookies)
     await browser.close()
+    return cookies, cookie_str
 
-    # Тестируем Plan A cookies реальным API запросом
-    rc = await _make_request_context(playwright, cookie_str, proxy)
-    if await _test_api(rc):
-        print(f"Plan A success: got {len(cookies)} valid cookies from browser.")
-        return None, rc
 
-    await rc.dispose()
-    print("Plan A failed (API returned captcha). Switching to Plan B: static cookies...")
+async def init_request_context(playwright, proxy=None):
+    proxy_label = f" (via proxy {proxy})" if proxy else ""
+
+    # План А: заходим на сайт со stealth, чтобы получить валидные cookies
+    for attempt in range(1, 3):
+        print(f"Plan A (attempt {attempt}): visiting cian.ru with stealth browser{proxy_label}...")
+        try:
+            cookies, cookie_str = await _visit_cian_stealth(playwright, proxy)
+
+            rc = await _make_request_context(playwright, cookie_str, proxy)
+            if await _test_api(rc):
+                print(f"Plan A success: got {len(cookies)} valid cookies from browser.")
+                return None, rc
+
+            await rc.dispose()
+            print(f"Plan A attempt {attempt} failed (API returned captcha).")
+        except Exception as e:
+            print(f"Plan A attempt {attempt} error: {e}")
+
+        if attempt < 2:
+            wait = random.randint(3, 6)
+            print(f"Retrying in {wait}s with fresh browser...")
+            await asyncio.sleep(wait)
+
+    print("Plan A failed. Switching to Plan B: static cookies...")
 
     # План Б: используем захардкоженные cookies
     cookie_str = "; ".join(f"{k}={v}" for k, v in FALLBACK_COOKIES.items())
