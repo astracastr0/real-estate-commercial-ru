@@ -288,10 +288,6 @@ async def _launch_stealth_browser(playwright, proxy=None):
     # Wait for cookies to settle
     await page.wait_for_timeout(random.randint(5000, 8000))
 
-    # Step 2: navigate to api.cian.ru so fetch() is same-origin
-    await page.goto("https://api.cian.ru/", wait_until="domcontentloaded")
-    await page.wait_for_timeout(1000)
-
     return browser, page
 
 
