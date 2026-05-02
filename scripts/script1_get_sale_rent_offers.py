@@ -167,6 +167,7 @@ async def _make_request_context(playwright, cookie_str, proxy=None):
     proxy_dict = _parse_proxy(proxy)
     if proxy_dict:
         kwargs["proxy"] = proxy_dict
+        kwargs["ignore_https_errors"] = True
     return await playwright.request.new_context(**kwargs)
 
 
