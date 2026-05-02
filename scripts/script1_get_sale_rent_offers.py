@@ -156,22 +156,33 @@ def _parse_proxy(proxy_str):
     return proxy_dict
 
 
-async def _make_request_context(playwright, cookie_str, proxy=None):
-    """Create a request context with given cookies."""
-    kwargs = {
-        "extra_http_headers": {
-            **HEADERS_BASE,
-            "Cookie": cookie_str
+async def _fetch_via_page(page, url, payload):
+    """POST JSON via fetch() inside the browser page.
+
+    This makes the request originate from the browser context,
+    so the proxy sees it as regular browser traffic (not a separate POST).
+    """
+    result = await page.evaluate("""
+        async ([url, body]) => {
+            try {
+                const resp = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json',
+                              'X-Requested-With': 'XMLHttpRequest'},
+                    body: body,
+                    credentials: 'include'
+                });
+                const text = await resp.text();
+                return {status: resp.status, body: text};
+            } catch (e) {
+                return {status: 0, body: e.toString()};
+            }
         }
-    }
-    proxy_dict = _parse_proxy(proxy)
-    if proxy_dict:
-        kwargs["proxy"] = proxy_dict
-        kwargs["ignore_https_errors"] = True
-    return await playwright.request.new_context(**kwargs)
+    """, [url, json.dumps(payload)])
+    return result
 
 
-async def _test_api(request_context):
+async def _test_api(page):
     """Make a test API call to check if cookies are valid. Returns True if OK."""
     test_payload = {
         "jsonQuery": {
@@ -182,9 +193,8 @@ async def _test_api(request_context):
             "geo": {"type": "geo", "value": [{"id": 9, "type": "district"}]}
         }
     }
-    response = await request_context.post(API_URL, data=json.dumps(test_payload))
-    text = await response.text()
-    if response.status == 200 and not text.startswith("<"):
+    result = await _fetch_via_page(page, API_URL, test_payload)
+    if result["status"] == 200 and not result["body"].startswith("<"):
         return True
     return False
 
@@ -234,8 +244,8 @@ STEALTH_ARGS = [
 ]
 
 
-async def _visit_cian_stealth(playwright, proxy=None):
-    """Launch a stealth browser, visit cian.ru with human-like behavior, return cookie string."""
+async def _launch_stealth_browser(playwright, proxy=None):
+    """Launch a stealth browser, visit cian.ru, return (browser, page)."""
     launch_opts = {"headless": True, "args": STEALTH_ARGS}
     proxy_dict = _parse_proxy(proxy)
     if proxy_dict:
@@ -247,6 +257,7 @@ async def _visit_cian_stealth(playwright, proxy=None):
         locale="ru-RU",
         timezone_id="Europe/Moscow",
         user_agent=HEADERS_BASE["User-Agent"],
+        ignore_https_errors=True,
     )
 
     await context.add_init_script(STEALTH_JS)
@@ -272,76 +283,63 @@ async def _visit_cian_stealth(playwright, proxy=None):
     await page.evaluate("window.scrollBy(0, %d)" % random.randint(-200, -50))
     await page.mouse.move(random.randint(400, 1200), random.randint(100, 500))
 
-    # Wait 5-8 seconds total for cookies to settle
+    # Wait for cookies to settle
     await page.wait_for_timeout(random.randint(5000, 8000))
 
-    cookies = await context.cookies()
-    cookie_str = "; ".join(f"{c['name']}={c['value']}" for c in cookies)
-    await browser.close()
-    return cookies, cookie_str
+    return browser, page
 
 
-async def init_request_context(playwright, proxy=None):
+async def init_browser(playwright, proxy=None):
+    """Launch stealth browser and verify API access. Returns (browser, page)."""
     proxy_label = f" (via proxy {proxy})" if proxy else ""
 
-    # План А: заходим на сайт со stealth, чтобы получить валидные cookies
     for attempt in range(1, 3):
-        print(f"Plan A (attempt {attempt}): visiting cian.ru with stealth browser{proxy_label}...")
+        print(f"Attempt {attempt}: launching stealth browser{proxy_label}...")
         try:
-            cookies, cookie_str = await _visit_cian_stealth(playwright, proxy)
+            browser, page = await _launch_stealth_browser(playwright, proxy)
 
-            rc = await _make_request_context(playwright, cookie_str, proxy)
-            if await _test_api(rc):
-                print(f"Plan A success: got {len(cookies)} valid cookies from browser.")
-                return None, rc
+            if await _test_api(page):
+                cookies = await page.context.cookies()
+                print(f"Success: got {len(cookies)} valid cookies, API works via browser.")
+                return browser, page
 
-            await rc.dispose()
-            print(f"Plan A attempt {attempt} failed (API returned captcha).")
+            print(f"Attempt {attempt} failed (API returned captcha).")
+            await browser.close()
         except Exception as e:
-            print(f"Plan A attempt {attempt} error: {e}")
+            print(f"Attempt {attempt} error: {e}")
 
         if attempt < 2:
             wait = random.randint(3, 6)
-            print(f"Retrying in {wait}s with fresh browser...")
+            print(f"Retrying in {wait}s...")
             await asyncio.sleep(wait)
 
-    print("Plan A failed. Switching to Plan B: static cookies...")
-
-    # План Б: используем захардкоженные cookies
-    cookie_str = "; ".join(f"{k}={v}" for k, v in FALLBACK_COOKIES.items())
-    rc = await _make_request_context(playwright, cookie_str, proxy)
-    if await _test_api(rc):
-        print("Plan B success: static cookies work.")
-        return None, rc
-
-    await rc.dispose()
-    print("Plan B also failed. Proceeding with static cookies anyway...")
-    rc = await _make_request_context(playwright, cookie_str, proxy)
-    return None, rc
+    # Last resort: launch browser anyway
+    print("API test failed, but launching browser to proceed...")
+    browser, page = await _launch_stealth_browser(playwright, proxy)
+    return browser, page
 
 
-async def fetch_json(request_context, payload, retries=3, delay=5):
+async def fetch_json(page, payload, retries=3, delay=5):
+    """POST to CIAN API via fetch() inside the browser page."""
     for attempt in range(1, retries + 1):
         print(f"Attempt {attempt}: POST {API_URL}")
-        response = await request_context.post(API_URL, data=json.dumps(payload))
+        result = await _fetch_via_page(page, API_URL, payload)
 
-        text = await response.text()
-
-        if response.status != 200:
-            print(f"HTTP {response.status}")
-            print(text[:300])
-            time.sleep(delay)
+        if result["status"] != 200:
+            print(f"HTTP {result['status']}")
+            print(result["body"][:300])
+            await asyncio.sleep(delay)
             continue
 
-        if text.startswith("<"):
+        if result["body"].startswith("<"):
             print("HTML detected (captcha). Skipping.")
             return None
 
         try:
-            return json.loads(text)
+            return json.loads(result["body"])
         except JSONDecodeError:
             print("Invalid JSON, retrying…")
-            time.sleep(delay)
+            await asyncio.sleep(delay)
 
     return None
 
@@ -354,7 +352,7 @@ async def process_offers(area, offer_type, base_payload, output_dir, proxy=None)
     os.makedirs(output_dir, exist_ok=True)
 
     async with async_playwright() as p:
-        browser, request_context = await init_request_context(p, proxy)
+        browser, page = await init_browser(p, proxy)
 
         for district in config["districts"]:
             print(f"Fetching {offer_type} offers for district {district}")
@@ -365,7 +363,7 @@ async def process_offers(area, offer_type, base_payload, output_dir, proxy=None)
                 "value": [{"id": district, "type": "district"}]
             }
 
-            data = await fetch_json(request_context, payload)
+            data = await fetch_json(page, payload)
 
             if data:
                 filename = f"{output_dir}/output_{offer_type}_district_{district}.json"
@@ -375,9 +373,7 @@ async def process_offers(area, offer_type, base_payload, output_dir, proxy=None)
 
             await asyncio.sleep(5)
 
-        await request_context.dispose()
-        if browser:
-            await browser.close()
+        await browser.close()
 
 # =========================
 # ENTRYPOINT
