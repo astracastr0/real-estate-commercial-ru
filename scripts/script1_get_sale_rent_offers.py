@@ -14,11 +14,43 @@ from json import JSONDecodeError
 
 API_URL = "https://api.cian.ru/commercial-search-offers/desktop/v1/offers/get-offers/"
 
-STATIC_BH = "EkAiTm90KEE6QnJhbmQiO3Y9IjgiLCAiQ2hyb21pdW0iO3Y9IjE0NCIsICJHb29nbGUgQ2hyb21lIjt2PSIxNDQiGgNhcm0iDjE0NC4wLjc1NTkuMTEwKgI/MDoHIm1hY09TIkIGMTMuNC4wSgI2NFJaIk5vdChBOkJyYW5kIjt2PSI4LjAuMC4wIiwiQ2hyb21pdW0iO3Y9IjE0NC4wLjc1NTkuMTEwIiwiR29vZ2xlIENocm9tZSI7dj0iMTQ0LjAuNzU1OS4xMTAiYLeQ08wGaiHcytG2Abvxn6sE+taGzAjS0e3rA/y5r/8H3/373AfzgQI="
+# Old BH (Chrome 144, Feb 2026)
+# STATIC_BH = "EkAiTm90KEE6QnJhbmQiO3Y9IjgiLCAiQ2hyb21pdW0iO3Y9IjE0NCIsICJHb29nbGUgQ2hyb21lIjt2PSIxNDQiGgNhcm0iDjE0NC4wLjc1NTkuMTEwKgI/MDoHIm1hY09TIkIGMTMuNC4wSgI2NFJaIk5vdChBOkJyYW5kIjt2PSI4LjAuMC4wIiwiQ2hyb21pdW0iO3Y9IjE0NC4wLjc1NTkuMTEwIiwiR29vZ2xlIENocm9tZSI7dj0iMTQ0LjAuNzU1OS4xMTAiYLeQ08wGaiHcytG2Abvxn6sE+taGzAjS0e3rA/y5r/8H3/373AfzgQI="
 
-# Plan B: fallback cookies from a real browser session (.cian.ru + www.cian.ru)
+# Fresh BH (Chrome 147, May 2026)
+STATIC_BH = "EkAiR29vZ2xlIENocm9tZSI7dj0iMTQ3IiwgIk5vdC5BL0JyYW5kIjt2PSI4IiwgIkNocm9taXVtIjt2PSIxNDciGgNhcm0iDjE0Ny4wLjc3MjcuMTAyKgI/MDoHIm1hY09TIkIGMTMuNC4wSgI2NFJaIkdvb2dsZSBDaHJvbWUiO3Y9IjE0Ny4wLjc3MjcuMTAyIiwiTm90LkEvQnJhbmQiO3Y9IjguMC4wLjAiLCJDaHJvbWl1bSI7dj0iMTQ3LjAuNzcyNy4xMDIiYLqV2s8GaiHcytG2Abvxn6sE+taGzAjS0e3rA/y5r/8H3/3vnAzzgQI="
+
+# Old fallback cookies (Feb 2026)
+# FALLBACK_COOKIES = {
+#     "bh": STATIC_BH,
+#     "tmr_lvidTS": "1771358263726",
+#     "tmr_lvid": "9e31abe95e274e6185822dd56403ee5d",
+#     "sopr_utm": "%7B%22utm_source%22%3A+%22direct%22%2C+%22utm_medium%22%3A+%22None%22%7D",
+#     "sopr_session": "e9e40eee326e4524",
+#     "session_region_id": "1",
+#     "session_main_town_region_id": "1",
+#     "login_mro_popup": "1",
+#     "cookie_agreement_accepted": "1",
+#     "_ym_visorc": "b",
+#     "_ym_uid": "1771358267448125848",
+#     "_ym_isad": "2",
+#     "_ym_d": "1771358267",
+#     "_yasc": "9kvgimsiSrcWgD+vwonG2zfBAgOvpoAVIkdtenSMuHkaeBbHBHKgSA10DkMBOaqe",
+#     "_gcl_au": "1.1.1120949663.1771358263",
+#     "_ga_3369S417EL": "GS2.1.s1771358266$o1$g1$t1771358296$j30$l0$h0",
+#     "_ga": "GA1.1.398076801.1771358267",
+#     "tmr_detect": "0%7C1771358297436",
+#     "domain_sid": "wJoTWOCpFT57G98EToGxH%3A1771358265300",
+#     "_spx": "eyJpZCI6IjkyNzc2MzhjLTYzZjktNDVjYS1iNGIzLWVjZTc2ODVlZDBjMyIsInNvdXJjZSI6IiIsImZpeGVkIjp7InN0YWNrIjpbMCw2MTIwMTAzOTRdfX0%3D",
+# }
+
+# Fresh fallback cookies (May 2026, Chrome 147)
 FALLBACK_COOKIES = {
     "bh": STATIC_BH,
+    "_CIAN_GK": "501d1690-6e64-47fd-b72a-1fdde28e27c3",
+    "session_region_id": "1",
+    "session_main_town_region_id": "1",
+    "cookie_agreement_accepted": "1",
     "tmr_lvidTS": "1771358263726",
     "tmr_lvid": "9e31abe95e274e6185822dd56403ee5d",
     "sopr_utm": "%7B%22utm_source%22%3A+%22direct%22%2C+%22utm_medium%22%3A+%22None%22%7D",
@@ -46,8 +78,8 @@ HEADERS_BASE = {
     "Referer": "https://www.cian.ru/",
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                   "AppleWebKit/537.36 (KHTML, like Gecko) "
-                  "Chrome/144.0.0.0 Safari/537.36",
-    "sec-ch-ua": '"Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"',
+                  "Chrome/147.0.0.0 Safari/537.36",
+    "sec-ch-ua": '"Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"',
     "sec-ch-ua-platform": '"macOS"',
     "sec-ch-ua-mobile": "?0",
     "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8",
@@ -156,23 +188,26 @@ def _parse_proxy(proxy_str):
     return proxy_dict
 
 
-async def _api_post(page, url, payload):
-    """POST to API using browser context request (shares cookies & proxy)."""
-    response = await page.context.request.post(
-        url,
-        headers={
-            "Content-Type": "application/json",
-            "Origin": "https://www.cian.ru",
-            "Referer": "https://www.cian.ru/",
-            "X-Requested-With": "XMLHttpRequest",
+async def _make_request_context(playwright, proxy=None):
+    """Create a lightweight request context with fallback cookies and proxy.
+
+    No browser needed — just HTTP requests with cookies.
+    """
+    cookie_str = "; ".join(f"{k}={v}" for k, v in FALLBACK_COOKIES.items())
+    kwargs = {
+        "extra_http_headers": {
+            **HEADERS_BASE,
+            "Cookie": cookie_str,
         },
-        data=json.dumps(payload),
-    )
-    text = await response.text()
-    return {"status": response.status, "body": text}
+        "ignore_https_errors": True,
+    }
+    proxy_dict = _parse_proxy(proxy)
+    if proxy_dict:
+        kwargs["proxy"] = proxy_dict
+    return await playwright.request.new_context(**kwargs)
 
 
-async def _test_api(page):
+async def _test_api(rc):
     """Make a test API call to check if cookies are valid. Returns True if OK."""
     test_payload = {
         "jsonQuery": {
@@ -183,152 +218,47 @@ async def _test_api(page):
             "geo": {"type": "geo", "value": [{"id": 9, "type": "district"}]}
         }
     }
-    result = await _api_post(page, API_URL, test_payload)
-    if result["status"] == 200 and not result["body"].startswith("<"):
+    response = await rc.post(API_URL, data=json.dumps(test_payload))
+    text = await response.text()
+    if response.status == 200 and not text.startswith("<"):
         return True
     return False
 
 
-STEALTH_JS = """
-// Hide navigator.webdriver
-Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-
-// Mock navigator.plugins
-Object.defineProperty(navigator, 'plugins', {
-    get: () => [
-        { name: 'Chrome PDF Plugin', filename: 'internal-pdf-viewer', description: 'Portable Document Format' },
-        { name: 'Chrome PDF Viewer', filename: 'mhjfbmdgcfjbbpaeojofohoefgiehjai', description: '' },
-        { name: 'Native Client', filename: 'internal-nacl-plugin', description: '' },
-    ],
-});
-
-// Mock navigator.languages
-Object.defineProperty(navigator, 'languages', { get: () => ['ru-RU', 'ru', 'en-US', 'en'] });
-
-// Mock chrome.runtime
-window.chrome = { runtime: {} };
-
-// Patch permissions.query
-const origQuery = window.navigator.permissions.query;
-window.navigator.permissions.query = (params) =>
-    params.name === 'notifications'
-        ? Promise.resolve({ state: Notification.permission })
-        : origQuery(params);
-
-// Override WebGL vendor/renderer
-const getParameter = WebGLRenderingContext.prototype.getParameter;
-WebGLRenderingContext.prototype.getParameter = function(param) {
-    if (param === 37445) return 'Intel Inc.';
-    if (param === 37446) return 'Intel Iris OpenGL Engine';
-    return getParameter.call(this, param);
-};
-"""
-
-STEALTH_ARGS = [
-    "--disable-blink-features=AutomationControlled",
-    "--no-sandbox",
-    "--disable-dev-shm-usage",
-    "--disable-infobars",
-    "--ignore-certificate-errors",
-    "--window-size=1920,1080",
-]
-
-
-async def _launch_stealth_browser(playwright, proxy=None):
-    """Launch a stealth browser, visit cian.ru, return (browser, page)."""
-    launch_opts = {"headless": True, "args": STEALTH_ARGS}
-    proxy_dict = _parse_proxy(proxy)
-    if proxy_dict:
-        launch_opts["proxy"] = proxy_dict
-
-    browser = await playwright.chromium.launch(**launch_opts)
-    context = await browser.new_context(
-        viewport={"width": 1920, "height": 1080},
-        locale="ru-RU",
-        timezone_id="Europe/Moscow",
-        user_agent=HEADERS_BASE["User-Agent"],
-        ignore_https_errors=True,
-    )
-
-    await context.add_init_script(STEALTH_JS)
-
-    await context.add_cookies([{
-        "name": "bh",
-        "value": STATIC_BH,
-        "domain": ".cian.ru",
-        "path": "/",
-        "secure": True,
-        "httpOnly": False,
-        "sameSite": "Lax",
-    }])
-
-    page = await context.new_page()
-
-    # Step 1: visit www.cian.ru to collect cookies
-    await page.goto("https://www.cian.ru/", wait_until="domcontentloaded")
-
-    # Human-like behavior: scroll and move mouse
-    await page.wait_for_timeout(random.randint(1500, 3000))
-    await page.mouse.move(random.randint(100, 800), random.randint(200, 600))
-    await page.evaluate("window.scrollBy(0, %d)" % random.randint(300, 700))
-    await page.wait_for_timeout(random.randint(1000, 2000))
-    await page.evaluate("window.scrollBy(0, %d)" % random.randint(-200, -50))
-    await page.mouse.move(random.randint(400, 1200), random.randint(100, 500))
-
-    # Wait for cookies to settle
-    await page.wait_for_timeout(random.randint(5000, 8000))
-
-    return browser, page
-
-
-async def init_browser(playwright, proxy=None):
-    """Launch stealth browser and verify API access. Returns (browser, page)."""
+async def init_request_context(playwright, proxy=None):
+    """Create request context with fallback cookies. Returns (None, rc)."""
     proxy_label = f" (via proxy {proxy})" if proxy else ""
+    print(f"Initializing API request context with static cookies{proxy_label}...")
 
-    for attempt in range(1, 3):
-        print(f"Attempt {attempt}: launching stealth browser{proxy_label}...")
-        try:
-            browser, page = await _launch_stealth_browser(playwright, proxy)
+    rc = await _make_request_context(playwright, proxy)
 
-            if await _test_api(page):
-                cookies = await page.context.cookies()
-                print(f"Success: got {len(cookies)} valid cookies, API works via browser.")
-                return browser, page
+    if await _test_api(rc):
+        print("API test passed — cookies are valid.")
+        return None, rc
 
-            print(f"Attempt {attempt} failed (API returned captcha).")
-            await browser.close()
-        except Exception as e:
-            print(f"Attempt {attempt} error: {e}")
-
-        if attempt < 2:
-            wait = random.randint(3, 6)
-            print(f"Retrying in {wait}s...")
-            await asyncio.sleep(wait)
-
-    # Last resort: launch browser anyway
-    print("API test failed, but launching browser to proceed...")
-    browser, page = await _launch_stealth_browser(playwright, proxy)
-    return browser, page
+    print("API test failed (captcha). Proceeding with static cookies anyway...")
+    return None, rc
 
 
-async def fetch_json(page, payload, retries=3, delay=5):
-    """POST to CIAN API using browser context request (shares cookies & proxy)."""
+async def fetch_json(rc, payload, retries=3, delay=5):
+    """POST to CIAN API using request context (no browser)."""
     for attempt in range(1, retries + 1):
         print(f"Attempt {attempt}: POST {API_URL}")
-        result = await _api_post(page, API_URL, payload)
+        response = await rc.post(API_URL, data=json.dumps(payload))
+        text = await response.text()
 
-        if result["status"] != 200:
-            print(f"HTTP {result['status']}")
-            print(result["body"][:300])
+        if response.status != 200:
+            print(f"HTTP {response.status}")
+            print(text[:300])
             await asyncio.sleep(delay)
             continue
 
-        if result["body"].startswith("<"):
+        if text.startswith("<"):
             print("HTML detected (captcha). Skipping.")
             return None
 
         try:
-            return json.loads(result["body"])
+            return json.loads(text)
         except JSONDecodeError:
             print("Invalid JSON, retrying…")
             await asyncio.sleep(delay)
@@ -344,7 +274,7 @@ async def process_offers(area, offer_type, base_payload, output_dir, proxy=None)
     os.makedirs(output_dir, exist_ok=True)
 
     async with async_playwright() as p:
-        browser, page = await init_browser(p, proxy)
+        _, rc = await init_request_context(p, proxy)
 
         for district in config["districts"]:
             print(f"Fetching {offer_type} offers for district {district}")
@@ -355,7 +285,7 @@ async def process_offers(area, offer_type, base_payload, output_dir, proxy=None)
                 "value": [{"id": district, "type": "district"}]
             }
 
-            data = await fetch_json(page, payload)
+            data = await fetch_json(rc, payload)
 
             if data:
                 filename = f"{output_dir}/output_{offer_type}_district_{district}.json"
@@ -365,7 +295,7 @@ async def process_offers(area, offer_type, base_payload, output_dir, proxy=None)
 
             await asyncio.sleep(5)
 
-        await browser.close()
+        await rc.dispose()
 
 # =========================
 # ENTRYPOINT
