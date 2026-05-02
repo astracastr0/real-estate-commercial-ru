@@ -13,12 +13,9 @@ areas = ['NAO', 'CAO', 'VAO', 'ZAO', 'SAO', 'SZAO', 'SVAO', 'UVAO', 'UAO', 'UZAO
 
 api_key = 'AIzaSyD3uB5Syh7E-tW0a9qLu2EHJ1MqHxqyUu8'
 
-# Bright Data residential proxy — password from env var BRIGHT_DATA_PROXY_PASS
-_bd_pass = os.environ.get('BRIGHT_DATA_PROXY_PASS', '')
-proxy = (
-    f'http://brd-customer-hl_3b703d03-zone-residential_proxy1:{_bd_pass}'
-    f'@brd.superproxy.io:33335'
-) if _bd_pass else 'http://89.208.85.78:443'
+# Proxy — pass full URL via PROXY_URL env var, e.g.:
+#   export PROXY_URL='http://user:pass@host:port'
+proxy = os.environ.get('PROXY_URL', 'http://89.208.85.78:443')
 script_master_path = 'scripts/script_master.py'
 output_directory = 'output'
 output_directory_csv = f'{output_directory}/CSV'
