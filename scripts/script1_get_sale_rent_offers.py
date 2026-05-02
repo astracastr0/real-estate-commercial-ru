@@ -4,6 +4,7 @@ import json
 import time
 import random
 import asyncio
+from urllib.parse import urlparse
 from playwright.async_api import async_playwright
 from json import JSONDecodeError
 
@@ -138,6 +139,23 @@ districts_undergrounds_mapping = {
 # PLAYWRIGHT CORE
 # =========================
 
+def _parse_proxy(proxy_str):
+    """Parse proxy string into Playwright proxy dict.
+
+    Supports both simple (http://host:port) and authenticated
+    (http://user:pass@host:port) formats.
+    """
+    if not proxy_str:
+        return None
+    parsed = urlparse(proxy_str)
+    proxy_dict = {"server": f"{parsed.scheme}://{parsed.hostname}:{parsed.port}"}
+    if parsed.username:
+        proxy_dict["username"] = parsed.username
+    if parsed.password:
+        proxy_dict["password"] = parsed.password
+    return proxy_dict
+
+
 async def _make_request_context(playwright, cookie_str, proxy=None):
     """Create a request context with given cookies."""
     kwargs = {
@@ -146,8 +164,9 @@ async def _make_request_context(playwright, cookie_str, proxy=None):
             "Cookie": cookie_str
         }
     }
-    if proxy:
-        kwargs["proxy"] = {"server": proxy}
+    proxy_dict = _parse_proxy(proxy)
+    if proxy_dict:
+        kwargs["proxy"] = proxy_dict
     return await playwright.request.new_context(**kwargs)
 
 
@@ -216,8 +235,9 @@ STEALTH_ARGS = [
 async def _visit_cian_stealth(playwright, proxy=None):
     """Launch a stealth browser, visit cian.ru with human-like behavior, return cookie string."""
     launch_opts = {"headless": True, "args": STEALTH_ARGS}
-    if proxy:
-        launch_opts["proxy"] = {"server": proxy}
+    proxy_dict = _parse_proxy(proxy)
+    if proxy_dict:
+        launch_opts["proxy"] = proxy_dict
 
     browser = await playwright.chromium.launch(**launch_opts)
     context = await browser.new_context(
