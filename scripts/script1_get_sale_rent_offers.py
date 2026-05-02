@@ -157,29 +157,19 @@ def _parse_proxy(proxy_str):
 
 
 async def _api_post(page, url, payload):
-    """POST to API via fetch() inside the browser page (same-origin).
-
-    The page must be navigated to api.cian.ru so fetch is same-origin
-    and goes through the browser's proxy as regular traffic.
-    """
-    result = await page.evaluate("""
-        async ([url, body]) => {
-            try {
-                const resp = await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json',
-                              'X-Requested-With': 'XMLHttpRequest'},
-                    body: body,
-                    credentials: 'include'
-                });
-                const text = await resp.text();
-                return {status: resp.status, body: text};
-            } catch (e) {
-                return {status: 0, body: e.toString()};
-            }
-        }
-    """, [url, json.dumps(payload)])
-    return result
+    """POST to API using browser context request (shares cookies & proxy)."""
+    response = await page.context.request.post(
+        url,
+        headers={
+            "Content-Type": "application/json",
+            "Origin": "https://www.cian.ru",
+            "Referer": "https://www.cian.ru/",
+            "X-Requested-With": "XMLHttpRequest",
+        },
+        data=json.dumps(payload),
+    )
+    text = await response.text()
+    return {"status": response.status, "body": text}
 
 
 async def _test_api(page):
