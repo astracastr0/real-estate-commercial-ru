@@ -157,23 +157,29 @@ def _parse_proxy(proxy_str):
 
 
 async def _api_post(page, url, payload):
-    """POST to API using the browser context's built-in request.
+    """POST to API via fetch() inside the browser page (same-origin).
 
-    Uses page.context.request which shares cookies/proxy with the browser
-    but is not subject to CORS restrictions.
+    The page must be navigated to api.cian.ru so fetch is same-origin
+    and goes through the browser's proxy as regular traffic.
     """
-    response = await page.context.request.post(
-        url,
-        headers={
-            "Content-Type": "application/json",
-            "Origin": "https://www.cian.ru",
-            "Referer": "https://www.cian.ru/",
-            "X-Requested-With": "XMLHttpRequest",
-        },
-        data=json.dumps(payload),
-    )
-    text = await response.text()
-    return {"status": response.status, "body": text}
+    result = await page.evaluate("""
+        async ([url, body]) => {
+            try {
+                const resp = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json',
+                              'X-Requested-With': 'XMLHttpRequest'},
+                    body: body,
+                    credentials: 'include'
+                });
+                const text = await resp.text();
+                return {status: resp.status, body: text};
+            } catch (e) {
+                return {status: 0, body: e.toString()};
+            }
+        }
+    """, [url, json.dumps(payload)])
+    return result
 
 
 async def _test_api(page):
@@ -267,6 +273,8 @@ async def _launch_stealth_browser(playwright, proxy=None):
     }])
 
     page = await context.new_page()
+
+    # Step 1: visit www.cian.ru to collect cookies
     await page.goto("https://www.cian.ru/", wait_until="domcontentloaded")
 
     # Human-like behavior: scroll and move mouse
@@ -279,6 +287,10 @@ async def _launch_stealth_browser(playwright, proxy=None):
 
     # Wait for cookies to settle
     await page.wait_for_timeout(random.randint(5000, 8000))
+
+    # Step 2: navigate to api.cian.ru so fetch() is same-origin
+    await page.goto("https://api.cian.ru/", wait_until="domcontentloaded")
+    await page.wait_for_timeout(1000)
 
     return browser, page
 
