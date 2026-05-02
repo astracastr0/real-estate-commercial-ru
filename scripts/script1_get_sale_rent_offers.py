@@ -228,6 +228,7 @@ STEALTH_ARGS = [
     "--no-sandbox",
     "--disable-dev-shm-usage",
     "--disable-infobars",
+    "--ignore-certificate-errors",
     "--window-size=1920,1080",
 ]
 
