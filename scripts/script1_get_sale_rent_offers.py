@@ -156,30 +156,24 @@ def _parse_proxy(proxy_str):
     return proxy_dict
 
 
-async def _fetch_via_page(page, url, payload):
-    """POST JSON via fetch() inside the browser page.
+async def _api_post(page, url, payload):
+    """POST to API using the browser context's built-in request.
 
-    This makes the request originate from the browser context,
-    so the proxy sees it as regular browser traffic (not a separate POST).
+    Uses page.context.request which shares cookies/proxy with the browser
+    but is not subject to CORS restrictions.
     """
-    result = await page.evaluate("""
-        async ([url, body]) => {
-            try {
-                const resp = await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json',
-                              'X-Requested-With': 'XMLHttpRequest'},
-                    body: body,
-                    credentials: 'include'
-                });
-                const text = await resp.text();
-                return {status: resp.status, body: text};
-            } catch (e) {
-                return {status: 0, body: e.toString()};
-            }
-        }
-    """, [url, json.dumps(payload)])
-    return result
+    response = await page.context.request.post(
+        url,
+        headers={
+            "Content-Type": "application/json",
+            "Origin": "https://www.cian.ru",
+            "Referer": "https://www.cian.ru/",
+            "X-Requested-With": "XMLHttpRequest",
+        },
+        data=json.dumps(payload),
+    )
+    text = await response.text()
+    return {"status": response.status, "body": text}
 
 
 async def _test_api(page):
@@ -193,7 +187,7 @@ async def _test_api(page):
             "geo": {"type": "geo", "value": [{"id": 9, "type": "district"}]}
         }
     }
-    result = await _fetch_via_page(page, API_URL, test_payload)
+    result = await _api_post(page, API_URL, test_payload)
     if result["status"] == 200 and not result["body"].startswith("<"):
         return True
     return False
@@ -320,10 +314,10 @@ async def init_browser(playwright, proxy=None):
 
 
 async def fetch_json(page, payload, retries=3, delay=5):
-    """POST to CIAN API via fetch() inside the browser page."""
+    """POST to CIAN API using browser context request (shares cookies & proxy)."""
     for attempt in range(1, retries + 1):
         print(f"Attempt {attempt}: POST {API_URL}")
-        result = await _fetch_via_page(page, API_URL, payload)
+        result = await _api_post(page, API_URL, payload)
 
         if result["status"] != 200:
             print(f"HTTP {result['status']}")
