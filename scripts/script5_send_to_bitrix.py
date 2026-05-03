@@ -3,8 +3,9 @@ import requests
 import argparse
 import json
 import logging
+import os
 
-BITRIX_URL = "https://doverent.bitrix24.ru/rest/11/c7bky2wft98csftj/crm.item.add?entityTypeId=1032"
+BITRIX_URL = os.environ["BITRIX_URL"]
 
 
 def send_to_bitrix_from_csv(csv_path):

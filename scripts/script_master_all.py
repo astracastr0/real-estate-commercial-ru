@@ -11,19 +11,18 @@ from script6_send_to_telegram import send_to_telegram_from_df
 # Configs
 areas = ['NAO', 'CAO', 'VAO', 'ZAO', 'SAO', 'SZAO', 'SVAO', 'UVAO', 'UAO', 'UZAO', 'ZelAO']
 
-api_key = 'AIzaSyD3uB5Syh7E-tW0a9qLu2EHJ1MqHxqyUu8'
+api_key = os.environ["GOOGLE_API_KEY"]
 
 # Proxy — pass full URL via PROXY_URL env var, e.g.:
 #   export PROXY_URL='http://user:pass@host:port'
-proxy = os.environ.get('PROXY_URL', 'http://89.208.85.78:443')
+proxy = os.environ["PROXY_URL"]
 script_master_path = 'scripts/script_master.py'
 output_directory = 'output'
 output_directory_csv = f'{output_directory}/CSV'
-telegram_token = '8474295044:AAF8vIpC-d9jcaPytpszmFQuVY9jHJza8Oc'
-telegram_chat = '-5007976823'
+telegram_token = os.environ["TELEGRAM_TOKEN"]
+telegram_chat = os.environ["TELEGRAM_CHAT"]
 
-
-to_email = "fedora121@gmail.com, deminr@ya.ru, julia@dove.rent, oleg@dove.rent, maksim@dove.rent, slava@dove.rent"
+to_email = os.environ.get('TO_EMAIL', 'fedora121@gmail.com, deminr@ya.ru, julia@dove.rent, oleg@dove.rent, maksim@dove.rent, slava@dove.rent')
 
 
 
