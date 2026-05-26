@@ -22,7 +22,7 @@ output_directory_csv = f'{output_directory}/CSV'
 telegram_token = os.environ["TELEGRAM_TOKEN"]
 telegram_chat = os.environ["TELEGRAM_CHAT"]
 
-to_email = os.environ.get('TO_EMAIL', 'fedora121@gmail.com, deminr@ya.ru, julia@dove.rent, oleg@dove.rent, maksim@dove.rent, slava@dove.rent')
+to_email = os.environ.get('TO_EMAIL')
 
 
 
