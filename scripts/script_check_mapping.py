@@ -64,6 +64,10 @@ def main():
     print("Mapping check — new districts & undergrounds")
     print("=" * 60)
 
+    # Build global sets of all known IDs across all areas
+    all_known_districts   = set(d for m in MAPPING.values() for d in m["districts"])
+    all_known_undergrounds = set(u for m in MAPPING.values() for u in m["undergrounds"])
+
     found_any = False
 
     for area, m in MAPPING.items():
@@ -74,24 +78,35 @@ def main():
 
         districts, undergrounds = collect_ids(folders[-1])
 
-        new_d = sorted(x for x in districts    if x[0] not in m["districts"])
-        new_u = sorted(x for x in undergrounds if x[0] not in m["undergrounds"])
+        # Truly new = not in THIS area AND not in ANY other area
+        new_d = sorted(x for x in districts    if x[0] not in m["districts"]      and x[0] not in all_known_districts)
+        new_u = sorted(x for x in undergrounds if x[0] not in m["undergrounds"]   and x[0] not in all_known_undergrounds)
+
+        # Border effect = not in THIS area but already covered elsewhere
+        border_d = sorted(x for x in districts    if x[0] not in m["districts"]    and x[0] in all_known_districts)
+        border_u = sorted(x for x in undergrounds if x[0] not in m["undergrounds"] and x[0] in all_known_undergrounds)
 
         if new_d or new_u:
             found_any = True
-            print(f"\n[NEW] {area}  (folder: {os.path.basename(folders[-1])})")
+            print(f"\n[NEW - ADD TO MAPPING] {area}  (folder: {os.path.basename(folders[-1])})")
             if new_d:
                 print(f"  districts:    {new_d}")
             if new_u:
                 print(f"  undergrounds: {new_u}")
+        elif border_d or border_u:
+            print(f"[BORDER]  {area} — covered by other areas, skip")
+            if border_d:
+                print(f"  districts already elsewhere:    {border_d}")
+            if border_u:
+                print(f"  undergrounds already elsewhere: {border_u}")
         else:
             print(f"[OK]  {area}  ({len(districts)} dist, {len(undergrounds)} metro)")
 
     print()
     if not found_any:
-        print("All good — mapping is up to date.")
+        print("All good — no truly new IDs found.")
     else:
-        print("Add the IDs above to MAPPING in this script AND to")
+        print("Add the IDs marked [NEW] to MAPPING in this script AND to")
         print("districts_undergrounds_mapping in script1_get_sale_rent_offers.py")
 
 
