@@ -244,8 +244,13 @@ async def fetch_json(rc, payload, retries=3, delay=5):
     """POST to CIAN API using request context (no browser)."""
     for attempt in range(1, retries + 1):
         print(f"Attempt {attempt}: POST {API_URL}")
-        response = await rc.post(API_URL, data=json.dumps(payload))
-        text = await response.text()
+        try:
+            response = await rc.post(API_URL, data=json.dumps(payload))
+            text = await response.text()
+        except Exception as e:
+            print(f"Connection error: {e}, retrying…")
+            await asyncio.sleep(delay)
+            continue
 
         if response.status != 200:
             print(f"HTTP {response.status}")
