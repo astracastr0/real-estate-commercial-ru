@@ -299,6 +299,25 @@ async def process_offers(area, offer_type, base_payload, output_dir, proxy=None)
 
             await asyncio.sleep(5)
 
+        for underground in config.get("undergrounds", []):
+            print(f"Fetching {offer_type} offers for underground {underground}")
+
+            payload = json.loads(json.dumps(base_payload))
+            payload["jsonQuery"]["geo"] = {
+                "type": "geo",
+                "value": [{"id": underground, "type": "underground"}]
+            }
+
+            data = await fetch_json(rc, payload)
+
+            if data:
+                filename = f"{output_dir}/output_{offer_type}_underground_{underground}.json"
+                with open(filename, "w", encoding="utf-8") as f:
+                    json.dump(data, f, ensure_ascii=False, indent=2)
+                print(f"Saved {filename}")
+
+            await asyncio.sleep(5)
+
         await rc.dispose()
 
 # =========================
